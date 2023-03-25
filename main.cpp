@@ -6,51 +6,71 @@
 #include <limits>
 #include <stdint.h>
 #include <bits/stdc++.h>
+#include <iterator>
 using namespace std;
 
 /*
-You are given an integer array score of size n, where score[i] is the score of the ith athlete in a competition. 
-All the scores are guaranteed to be unique.
+You are given a 0-indexed string array words, where words[i] consists of lowercase English letters.
 
-The athletes are placed based on their scores, where the 1st place athlete has the highest score, 
-the 2nd place athlete has the 2nd highest score, and so on. The placement of each athlete determines their rank:
+In one operation, select any index i such that 0 < i < words.length and words[i - 1] and words[i] are anagrams, and delete words[i] from words.
+Keep performing this operation as long as you can select an index that satisfies the conditions.
 
-The 1st place athlete's rank is "Gold Medal".
-The 2nd place athlete's rank is "Silver Medal".
-The 3rd place athlete's rank is "Bronze Medal".
-For the 4th place to the nth place athlete, their rank is their placement number (i.e., the xth place athlete's rank is "x").
-Return an array answer of size n where answer[i] is the rank of the ith athlete.
+Return words after performing all operations. It can be shown that selecting the indices for each operation in any arbitrary order will lead to 
+the same result.
 
-n == score.length
-1 <= n <= 104
-0 <= score[i] <= 106
-All the values in score are unique.
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase using all the original letters exactly once. 
+For example, "dacb" is an anagram of "abdc".
+
+1 <= words.length <= 100
+1 <= words[i].length <= 10
+words[i] consists of lowercase English letters.
 */
-    vector<string> findRelativeRanks(vector<int>& score) {
-        vector<string> result(score.size());
-		map<int, int> map;
-		for (size_t i = 0; i < score.size(); ++i){
-			map.insert(make_pair(score[i],i));
+
+//this function is from another problem at LeetCode
+ bool isAnagram(string s, string t) {
+        //if strings are not of equal length, they cannot be anagrams
+        if (s.length() != t.length())
+			return false;
+        //create maps containing all letters from both words
+		map<char,int> mapS, mapT;
+		for (size_t i = 0; i < s.length(); ++i){
+			++mapS[s[i]];
+			++mapT[t[i]];
 		}
-		int count = 1;
-		for (auto it = map.rbegin(); it != map.rend(); ++it){
-			if (count == 1){
-				result[it->second] = "Gold Medal";
+        //the maps must be equal. If we come across different keys or values, these are not valid anagrams
+		for (auto itS = mapS.begin(), itT = mapT.begin(); itS != mapS.end(), itT != mapT.end(); ++itS, ++itT){
+			if ((itS->first != itT->first) || (itS->second != itT->second))
+				return false;
+		}
+		return true;
+ }
+		//using separate function to check if two strings are anagrams, iterate through words in reverse dir
+    //the version that erases words from existing array
+		// vector<string> removeAnagrams(vector<string>& words) {
+		// for (auto it = words.end()-1; it != words.begin(); --it){
+		// 	if (isAnagram(*it, *prev(it))){
+		// 		it = words.erase(it);
+		// 	}
+		// }
+		// return words;
+    // }
+
+		//the version that uses a new array to emplace results. No improvement in speed or memory
+		vector<string> removeAnagrams(vector<string>& words) {
+		vector<string> result;
+		for (auto it = words.end()-1; it != words.begin(); --it){
+			if (!isAnagram(*it, *prev(it))){
+				result.emplace(result.begin(),*it);
+				// it = words.erase(it);
 			}
-			else if (count == 2)
-				result[it->second] = "Silver Medal";
-			else if (count == 3)
-				result[it->second] = "Bronze Medal";
-			else 
-				result[it->second] = to_string(count);
-			++count;
 		}
+		result.emplace(result.begin(),*words.begin());
 		return result;
     }
 
 int main(){
-	vector<int> score = {10,7};
-	vector<string> result = findRelativeRanks(score);
+	vector<string> words = {"abba","baba","bbaa","cd","cd"};
+	vector<string> result = removeAnagrams(words);
 	for (auto i:result)
 	std::cout << i << "\n";
 }
