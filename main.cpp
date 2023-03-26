@@ -11,54 +11,51 @@
 using namespace std;
 
 /*
-We define a harmonious array as an array where the difference between its maximum value and its minimum value is exactly 1.
+1921. Eliminate Maximum Number of Monsters
+You are playing a video game where you are defending your city from a group of n monsters. 
+You are given a 0-indexed integer array dist of size n, where dist[i] is the initial distance in kilometers of the ith monster from the city.
 
-Given an integer array nums, return the length of its longest harmonious subsequence among all its possible subsequences.
+The monsters walk toward the city at a constant speed. 
+The speed of each monster is given to you in an integer array speed of size n, where speed[i] is the speed of the ith monster in 
+kilometers per minute.
 
-A subsequence of array is a sequence that can be derived from the array by deleting some or no elements without changing 
-the order of the remaining elements.
+You have a weapon that, once fully charged, can eliminate a single monster. 
+However, the weapon takes one minute to charge.The weapon is fully charged at the very start.
 
-1 <= nums.length <= 2 * 104
--109 <= nums[i] <= 109
+You lose when any monster reaches your city. If a monster reaches the city at the exact moment the weapon is fully charged, 
+it counts as a loss, and the game ends before you can use your weapon.
+
+Return the maximum number of monsters that you can eliminate before you lose, or n if you can eliminate all the monsters before they reach the city.
+
+n == dist.length == speed.length
+1 <= n <= 105
+1 <= dist[i], speed[i] <= 105
 */
- //implementing single-pass editorial algorithm
-		int findLHS(vector<int>& nums) {
-      //base case
-			if (nums.size() == 1){
-				return 0;
-			}
-			//lhs - result
-			int lhs = 0, greater = 0, less = 0;
-			//map key=nums[i], val = number of occurencies in nums
-			std::map<int,int> myMap;
-
-			for (size_t i = 0; i < nums.size(); ++i){
-				greater = 0; less = 0;
-				//increment count of occurrencies
-				++myMap[nums[i]];
-				//check if current val + 1 exists in the map
-				if (myMap.find(nums[i] + 1) != myMap.end()){
-					greater = myMap[nums[i]+1];
-				}
-				//check if current val -1 exists in the map
-				if (myMap.find(nums[i] - 1) != myMap.end()){
-					less = myMap[nums[i]-1];
-				}
-				//only update result if val+1 or val-1 exist
-				if (greater > 0 || less > 0){
-					lhs = std::max(
-								{lhs, myMap[nums[i]]+greater, myMap[nums[i]] + less},
-									[&](int a, int b){
-										return a < b;
-									});
-				}
+     int eliminateMaximum(vector<int>& dist, vector<int>& speed) {
+    	vector<int> time(dist.size());
+		//vector time is how many minutes left until the monster will reach the town
+		//zero or negative value indicates that the monster will be in town at next step
+		for (size_t i = 0; i < dist.size(); ++i){
+			time[i] = (dist[i]%speed[i] > 0)?(dist[i]/speed[i] +1):(dist[i]/speed[i]);
 		}
-		return lhs;
+		//sort array and start shooting monsters from least to most subtracting 1 at each step
+		//stop if we come across negative or zero value 
+		sort(time.begin(), time.end());
+		int count = 1, minutes = 1;
+		for (size_t i = 1; i < time.size(); ++i){
+			if (time[i] - minutes <= 0){
+				return count;
+			}
+			++count;
+			++minutes;
+		}
+		return count;
     }
 
 int main(){
-	vector<int> nums ={1,2,3,4};
-	cout << findLHS(nums) << "\n";
+	vector<int> dist = {5,4,3,3,3};
+	vector<int> speed = {1,1,5,3,1};
+	std::cout << eliminateMaximum(dist, speed) << "\n";
 	
 
 }
