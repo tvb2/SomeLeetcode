@@ -7,31 +7,58 @@
 #include <stdint.h>
 #include <bits/stdc++.h>
 #include <iterator>
+#include <functional>
 using namespace std;
 
 /*
-561. Given an integer array nums of 2n integers, group these integers into n pairs 
-(a1, b1), (a2, b2), ..., (an, bn) such that the sum of min(ai, bi) for all i is maximized. 
-Return the maximized sum.
+We define a harmonious array as an array where the difference between its maximum value and its minimum value is exactly 1.
 
-1 <= n <= 104
-nums.length == 2 * n
--104 <= nums[i] <= 104
+Given an integer array nums, return the length of its longest harmonious subsequence among all its possible subsequences.
+
+A subsequence of array is a sequence that can be derived from the array by deleting some or no elements without changing 
+the order of the remaining elements.
+
+1 <= nums.length <= 2 * 104
+-109 <= nums[i] <= 109
 */
-    int arrayPairSum(vector<int>& nums) {
-        sort(nums.begin(), nums.end());
-		int sum = 0;
-		int it = nums.size()-2;
-		while(it >= 0){
-			sum += nums[it];
-			it -= 2; 
+ //implementing single-pass editorial algorithm
+		int findLHS(vector<int>& nums) {
+      //base case
+			if (nums.size() == 1){
+				return 0;
+			}
+			//lhs - result
+			int lhs = 0, greater = 0, less = 0;
+			//map key=nums[i], val = number of occurencies in nums
+			std::map<int,int> myMap;
+
+			for (size_t i = 0; i < nums.size(); ++i){
+				greater = 0; less = 0;
+				//increment count of occurrencies
+				++myMap[nums[i]];
+				//check if current val + 1 exists in the map
+				if (myMap.find(nums[i] + 1) != myMap.end()){
+					greater = myMap[nums[i]+1];
+				}
+				//check if current val -1 exists in the map
+				if (myMap.find(nums[i] - 1) != myMap.end()){
+					less = myMap[nums[i]-1];
+				}
+				//only update result if val+1 or val-1 exist
+				if (greater > 0 || less > 0){
+					lhs = std::max(
+								{lhs, myMap[nums[i]]+greater, myMap[nums[i]] + less},
+									[&](int a, int b){
+										return a < b;
+									});
+				}
 		}
-		return sum;
+		return lhs;
     }
 
 int main(){
-	vector<int> nums ={6,2,6,5,1,2};
-	cout << arrayPairSum(nums) << "\n";
+	vector<int> nums ={1,2,3,4};
+	cout << findLHS(nums) << "\n";
 	
 
 }
