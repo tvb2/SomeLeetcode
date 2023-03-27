@@ -11,51 +11,38 @@
 using namespace std;
 
 /*
-11. Container With Most Water
-You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith 
-line are (i, 0) and (i, height[i]).
+27. Remove Element
+Given an integer array nums and an integer val, remove all occurrences of val in nums in-place. The relative order of the elements may be changed.
 
-Find two lines that together with the x-axis form a container, such that the container contains the most water.
+Since it is impossible to change the length of the array in some languages, you must instead have the result be placed in the first part of the array nums. More formally, if there are k elements after removing the duplicates, then the first k elements of nums should hold the final result. It does not matter what you leave beyond the first k elements.
 
-Return the maximum amount of water a container can store.
+Return k after placing the final result in the first k slots of nums.
 
-Notice that you may not slant the container.
+Do not allocate extra space for another array. You must do this by modifying the input array in-place with O(1) extra memory.
 
-n == height.length
-2 <= n <= 105
-0 <= height[i] <= 104
+0 <= nums.length <= 100
+0 <= nums[i] <= 50
+0 <= val <= 100
 */
     
-	int maxArea(vector<int>& height) {
-    int maxArea= 0, area =0;
-	//using multimap to sort array. Keys are heights, values are indices
-	std::multimap<int,int> myMap;
-	//record indices already used in calculations
-	std::set<int> indices;
-	for (size_t i = 0; i < height.size(); ++i){
-		myMap.emplace(std::pair<int,int>(height[i], i));
-	}
-	auto it = myMap.rbegin();
-	indices.emplace(it->second);
-	for (it = std::next(it);
-			 it != myMap.rend();
-			  ++it){
-		area = it->first * std::max( 
-			abs(it->second - *indices.begin()), abs(it->second - *(--indices.end())) );
-		maxArea = (area > maxArea)?area:maxArea;
-		indices.emplace(it->second);
-		area = 0;
-		// if (it->second)
-		// indices.emplace(myMap.find(height[i])->second);
-
-	}
-	return maxArea;    
+	    int removeElement(vector<int>& nums, int val) {
+			if (nums.size() == 0)
+				return 0;
+			int ith = 0;
+			for (size_t i = 0; i < nums.size(); ++i){
+				if (nums[i] != val){
+					nums[ith] = nums[i];
+					++ith;
+				}
+			}
+        return ith;
     }
 
 int main(){
-	vector<int> height = {1,8,6,2,5,4,8,3,7};
+	vector<int> nums = {2,3};
+	int val = 2;
 
-	std::cout << maxArea(height) << "\n";
+	std::cout << removeElement(nums, val) << "\n";
 	
 
 }
