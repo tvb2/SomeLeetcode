@@ -11,51 +11,51 @@
 using namespace std;
 
 /*
-1921. Eliminate Maximum Number of Monsters
-You are playing a video game where you are defending your city from a group of n monsters. 
-You are given a 0-indexed integer array dist of size n, where dist[i] is the initial distance in kilometers of the ith monster from the city.
+11. Container With Most Water
+You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith 
+line are (i, 0) and (i, height[i]).
 
-The monsters walk toward the city at a constant speed. 
-The speed of each monster is given to you in an integer array speed of size n, where speed[i] is the speed of the ith monster in 
-kilometers per minute.
+Find two lines that together with the x-axis form a container, such that the container contains the most water.
 
-You have a weapon that, once fully charged, can eliminate a single monster. 
-However, the weapon takes one minute to charge.The weapon is fully charged at the very start.
+Return the maximum amount of water a container can store.
 
-You lose when any monster reaches your city. If a monster reaches the city at the exact moment the weapon is fully charged, 
-it counts as a loss, and the game ends before you can use your weapon.
+Notice that you may not slant the container.
 
-Return the maximum number of monsters that you can eliminate before you lose, or n if you can eliminate all the monsters before they reach the city.
-
-n == dist.length == speed.length
-1 <= n <= 105
-1 <= dist[i], speed[i] <= 105
+n == height.length
+2 <= n <= 105
+0 <= height[i] <= 104
 */
-     int eliminateMaximum(vector<int>& dist, vector<int>& speed) {
-    	vector<int> time(dist.size());
-		//vector time is how many minutes left until the monster will reach the town
-		//zero or negative value indicates that the monster will be in town at next step
-		for (size_t i = 0; i < dist.size(); ++i){
-			time[i] = (dist[i]%speed[i] > 0)?(dist[i]/speed[i] +1):(dist[i]/speed[i]);
-		}
-		//sort array and start shooting monsters from least to most subtracting 1 at each step
-		//stop if we come across negative or zero value 
-		sort(time.begin(), time.end());
-		int count = 1, minutes = 1;
-		for (size_t i = 1; i < time.size(); ++i){
-			if (time[i] - minutes <= 0){
-				return count;
-			}
-			++count;
-			++minutes;
-		}
-		return count;
+    
+	int maxArea(vector<int>& height) {
+    int maxArea= 0, area =0;
+	//using multimap to sort array. Keys are heights, values are indices
+	std::multimap<int,int> myMap;
+	//record indices already used in calculations
+	std::set<int> indices;
+	for (size_t i = 0; i < height.size(); ++i){
+		myMap.emplace(std::pair<int,int>(height[i], i));
+	}
+	auto it = myMap.rbegin();
+	indices.emplace(it->second);
+	for (it = std::next(it);
+			 it != myMap.rend();
+			  ++it){
+		area = it->first * std::max( 
+			abs(it->second - *indices.begin()), abs(it->second - *(--indices.end())) );
+		maxArea = (area > maxArea)?area:maxArea;
+		indices.emplace(it->second);
+		area = 0;
+		// if (it->second)
+		// indices.emplace(myMap.find(height[i])->second);
+
+	}
+	return maxArea;    
     }
 
 int main(){
-	vector<int> dist = {5,4,3,3,3};
-	vector<int> speed = {1,1,5,3,1};
-	std::cout << eliminateMaximum(dist, speed) << "\n";
+	vector<int> height = {1,8,6,2,5,4,8,3,7};
+
+	std::cout << maxArea(height) << "\n";
 	
 
 }
