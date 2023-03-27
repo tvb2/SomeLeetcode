@@ -11,33 +11,80 @@
 using namespace std;
 
 /*
-31. Next Permutation
-A permutation of an array of integers is an arrangement of its members into a sequence or linear order.
+33. Search in Rotated Sorted Array
+There is an integer array nums sorted in ascending order (with distinct values).
 
-For example, for arr = [1,2,3], the following are all the permutations of arr: [1,2,3], [1,3,2], [2, 1, 3], [2, 3, 1], [3,1,2], [3,2,1].
-The next permutation of an array of integers is the next lexicographically greater permutation of its integer. 
-More formally, if all the permutations of the array are sorted in one container according to their lexicographical order, 
-then the next permutation of that array is the permutation that follows it in the sorted container. If such arrangement is not possible, 
-the array must be rearranged as the lowest possible order (i.e., sorted in ascending order).
+Prior to being passed to your function, nums is possibly rotated at an unknown pivot index k (1 <= k < nums.length) 
+such that the resulting array is [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] (0-indexed). 
+For example, [0,1,2,4,5,6,7] might be rotated at pivot index 3 and become [4,5,6,7,0,1,2].
 
-For example, the next permutation of arr = [1,2,3] is [1,3,2].
-Similarly, the next permutation of arr = [2,3,1] is [3,1,2].
-While the next permutation of arr = [3,2,1] is [1,2,3] because [3,2,1] does not have a lexicographical larger rearrangement.
-Given an array of integers nums, find the next permutation of nums.
+Given the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.
 
-The replacement must be in place and use only constant extra memory.
+You must write an algorithm with O(log n) runtime complexity.
 
-1 <= nums.length <= 100
-0 <= nums[i] <= 100
+1 <= nums.length <= 5000
+-104 <= nums[i] <= 104
+All values of nums are unique.
+nums is an ascending array that is possibly rotated.
+-104 <= target <= 104
 */
 
+	int binarySearch(vector<int>& nums, int target, int l, int r){
+		int ind = l + (r - l)/2;
+		while ( l >=0 && r < nums.size() && l <= r){
+			ind = l + (r - l)/2;
+			if (nums[ind] == target){
+				return ind;
+			}
+			if (nums[ind] > target){
+				r = ind -1;
+			}
+			else {
+				l = ind +1;
+			}
+		}
+		return -1;
+	}
+
+    int search(vector<int>& nums, int target) {
+		if ((nums.size() == 1) && nums[0] == target)
+			return 0;
+		int l = 0, r = nums.size() - 1, ind = l;
+		
+		while (l <= r){
+			ind = l+ (r - l)/2;
+			
+			//not rotated
+			if (nums[l] < nums[r])
+				return binarySearch(nums, target, l, r);
+			
+			//rotated
+			if (nums[ind] == target)
+				return ind;
+			
+			
+			if (nums[ind] >= nums[l]){//we are in the higher side of the array
+				if ( (nums[ind] > target) && (target >= nums[l])) {//target is between l and ind;
+					return binarySearch(nums, target, l, ind - 1);
+				}
+				else
+					l = ind +1;
+			}
+			else if ( nums[ind] <= nums[r]){// we are in the lower side of the array
+				if ( (nums[ind] < target) && (target <= nums[r])) {// target is between ind and r
+					return binarySearch(nums, target, ind + 1, r);
+				}
+				else
+					r = ind - 1;
+			}
+		}
+		return -1;
+    }
 
 int main(){
-	vector<int> nums = {1};
-
- 	nextPermutation(nums);
-	for (auto it:nums)
-	std::cout << it << " ";
+	vector<int> nums = {4,5,6,7,0,1,2};
+	int target = 0;
+	std::cout << search(nums, target) << "\n";
 	
 
 }
