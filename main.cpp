@@ -11,38 +11,33 @@
 using namespace std;
 
 /*
-27. Remove Element
-Given an integer array nums and an integer val, remove all occurrences of val in nums in-place. The relative order of the elements may be changed.
+31. Next Permutation
+A permutation of an array of integers is an arrangement of its members into a sequence or linear order.
 
-Since it is impossible to change the length of the array in some languages, you must instead have the result be placed in the first part of the array nums. More formally, if there are k elements after removing the duplicates, then the first k elements of nums should hold the final result. It does not matter what you leave beyond the first k elements.
+For example, for arr = [1,2,3], the following are all the permutations of arr: [1,2,3], [1,3,2], [2, 1, 3], [2, 3, 1], [3,1,2], [3,2,1].
+The next permutation of an array of integers is the next lexicographically greater permutation of its integer. 
+More formally, if all the permutations of the array are sorted in one container according to their lexicographical order, 
+then the next permutation of that array is the permutation that follows it in the sorted container. If such arrangement is not possible, 
+the array must be rearranged as the lowest possible order (i.e., sorted in ascending order).
 
-Return k after placing the final result in the first k slots of nums.
+For example, the next permutation of arr = [1,2,3] is [1,3,2].
+Similarly, the next permutation of arr = [2,3,1] is [3,1,2].
+While the next permutation of arr = [3,2,1] is [1,2,3] because [3,2,1] does not have a lexicographical larger rearrangement.
+Given an array of integers nums, find the next permutation of nums.
 
-Do not allocate extra space for another array. You must do this by modifying the input array in-place with O(1) extra memory.
+The replacement must be in place and use only constant extra memory.
 
-0 <= nums.length <= 100
-0 <= nums[i] <= 50
-0 <= val <= 100
+1 <= nums.length <= 100
+0 <= nums[i] <= 100
 */
-    
-	    int removeElement(vector<int>& nums, int val) {
-			if (nums.size() == 0)
-				return 0;
-			int ith = 0;
-			for (size_t i = 0; i < nums.size(); ++i){
-				if (nums[i] != val){
-					nums[ith] = nums[i];
-					++ith;
-				}
-			}
-        return ith;
-    }
+
 
 int main(){
-	vector<int> nums = {2,3};
-	int val = 2;
+	vector<int> nums = {1};
 
-	std::cout << removeElement(nums, val) << "\n";
+ 	nextPermutation(nums);
+	for (auto it:nums)
+	std::cout << it << " ";
 	
 
 }
