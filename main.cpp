@@ -11,90 +11,86 @@
 using namespace std;
 
 /*
-81. Search in Rotated Sorted Array II
-There is an integer array nums sorted in non-decreasing order (not necessarily with distinct values).
+34. Find First and Last Position of Element in Sorted Array
+Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
 
-Before being passed to your function, nums is rotated at an unknown pivot index k (0 <= k < nums.length) such that the resulting array 
-is [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] (0-indexed). For example, [0,1,2,4,4,4,5,6,6,7] might be rotated 
-at pivot index 5 and become [4,5,6,6,7,0,1,2,4,4].
+If target is not found in the array, return [-1, -1].
 
-Given the array nums after the rotation and an integer target, return true if target is in nums, or false if it is not in nums.
-
-You must decrease the overall operation steps as much as possible.
-1 <= nums.length <= 5000
--104 <= nums[i] <= 104
-nums is guaranteed to be rotated at some pivot.
--104 <= target <= 104
+You must write an algorithm with O(log n) runtime complexity.
+0 <= nums.length <= 105
+-109 <= nums[i] <= 109
+nums is a non-decreasing array.
+-109 <= target <= 109
 */
 
-	bool binarySearch(vector<int>& nums, int target, int l, int r){
-		int ind = l + (r - l)/2;
-		while ( l >=0 && r < nums.size() && l <= r){
-			ind = l + (r - l)/2;
+	vector<int> searchRange(vector<int>& nums, int target) {
+		vector<int> result{-1,-1};
+		//base case
+		if (nums.size() == 0)
+			return result;
+		if ((nums.size() == 1)){
+			if(nums[0] == target){
+				result[0] = 0; result[1] = 0;
+			}
+			return result;
+		}
+		
+		int l = 0, r = nums.size() -1;
+		
+
+		while (l <= r){
+			int ind = l + (r - l)/2;
+			//case when l and r values are both our target values
+			if (nums[l] == target){
+				while ( (l >= 0) && (nums[l] == target) ){
+					--l;
+					if (l < 0){
+						break;
+					}
+				}
+				result[0] = l + 1;
+				l = (l >= 0)?l:0;
+			}
+			if (nums[r] == target){
+				while ( (r < nums.size()) && (nums[r] == target) ){
+					++r;
+					if (r > nums.size() - 1)
+						break;
+				}	
+				result[1] = r - 1;
+				r = (r < nums.size())?(r):(nums.size() -1);
+			}
+
+			//solution found and is not empty
+			if (result[0] != -1 && result[1] != -1)
+				return result;
+
+			//binary search using middle index
 			if (nums[ind] == target){
-				return true;
+				l = ind; r = ind;
+			}
+			if (nums[ind] < target){
+				l = ind + 1;
+				while ( l <= r && nums[l] == nums[ind]){
+					++l;
+				}
 			}
 			if (nums[ind] > target){
-					r = ind - 1;
-					while ( (r >= l) && (nums[r] == nums[ind]) )
-						--r;
+				r = ind - 1;
+				while (l <= r && nums[r] == nums[ind]){
+					--r;
 				}
-				else{
-					l = ind +1;
-					while ( (l <= r) && (nums[l] == nums[ind]) )
-						++l;
-				}
+			}
 		}
-		return false;
+		return result;
 	}
 
-    bool search(vector<int>& nums, int target) {
-		if ((nums.size() == 1) && nums[0] == target)
-			return true;
-		
-		int l = 0, r = nums.size() - 1, ind = l;
-		while (l <= r){
-			ind = l+ (r - l)/2;			
-			//rotated
-			if (nums[ind] == target)
-				return true;
-			
-			if (nums[l] == nums[r]){
-				if (nums[l] == target)
-					return true;
-				++l; --r;
-				continue;
-			}
-			if (nums[ind] >= nums[l]){
-				if ( (nums[ind] > target) && (target >= nums[l]) ) {
-					return binarySearch(nums, target, l, ind - 1);
-				}
-				else{
-						l = ind +1;
-						while ( (l <= r) && (nums[l] == nums[ind]) )
-							++l;
-				}
-			}
-			else if ( nums[ind] <= nums[r]){// we are in the lower side of the array
-				if ( (nums[ind] < target) && (target <= nums[r])) {// target is between ind and r
-					return binarySearch(nums, target, ind + 1, r);
-				}
-				else{
-					r = ind - 1;
-					while ( (r >= l) && (nums[r] == nums[ind]) )
-						--r;
-				}
-			}
-		}
-		return false;
-    }
-
 int main(){
-	vector<int> nums = {3,4,4,4,4,4,4,5,5,6,6,6,6,6,6,6,7,7,7,7,7,7,8,8,8,8,8,8,8,9,9,9,9,9,9,9,9,9,10,10,10,-10,-10,-10,-9,-8,
-	-8,-8,-8,-8,-7,-7,-7,-7,-6,-6,-6,-6,-6,-6,-6,-5,-5,-5,-4,-4,-4,-4,-3,-3,-3,-3,-3,-3,-2,-2,-2,-2,-1,-1,0,0,0,1,1,1,1,1,1,2,2,
-	2,2,2,2,2,2,3,3,3};
+	vector<int> nums = {1,2,2};
 	int target = 2;
-	std::cout << boolalpha << search(nums, target) << "\n";
+	vector<int> result = searchRange(nums, target);
+	for (auto i:result)
+	std::cout << i << " ";
 	
 
 }
