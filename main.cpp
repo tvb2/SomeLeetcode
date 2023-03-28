@@ -11,86 +11,44 @@
 using namespace std;
 
 /*
-34. Find First and Last Position of Element in Sorted Array
-Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
+454. 4Sum II
+Given four integer arrays nums1, nums2, nums3, and nums4 all of length n, return the number of tuples (i, j, k, l) such that:
 
-If target is not found in the array, return [-1, -1].
-
-You must write an algorithm with O(log n) runtime complexity.
-0 <= nums.length <= 105
--109 <= nums[i] <= 109
-nums is a non-decreasing array.
--109 <= target <= 109
+0 <= i, j, k, l < n
+nums1[i] + nums2[j] + nums3[k] + nums4[l] == 0
+n == nums1.length
+n == nums2.length
+n == nums3.length
+n == nums4.length
+1 <= n <= 200
+-228 <= nums1[i], nums2[i], nums3[i], nums4[i] <= 228
 */
 
-	vector<int> searchRange(vector<int>& nums, int target) {
-		vector<int> result{-1,-1};
-		//base case
-		if (nums.size() == 0)
-			return result;
-		if ((nums.size() == 1)){
-			if(nums[0] == target){
-				result[0] = 0; result[1] = 0;
-			}
-			return result;
+//implementing solution by abivilion and shwetanknaveen
+int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) {
+	int result = 0;
+	std::map<int,int> oneTwoSum;
+
+	//calculate all possible sums of nums1 and nums2 and record these sums to map
+	for (auto it1:nums1){
+		for (auto it2:nums2){
+			++oneTwoSum[it1 + it2];
 		}
-		
-		int l = 0, r = nums.size() -1;
-		
-
-		while (l <= r){
-			int ind = l + (r - l)/2;
-			//case when l and r values are both our target values
-			if (nums[l] == target){
-				while ( (l >= 0) && (nums[l] == target) ){
-					--l;
-					if (l < 0){
-						break;
-					}
-				}
-				result[0] = l + 1;
-				l = (l >= 0)?l:0;
-			}
-			if (nums[r] == target){
-				while ( (r < nums.size()) && (nums[r] == target) ){
-					++r;
-					if (r > nums.size() - 1)
-						break;
-				}	
-				result[1] = r - 1;
-				r = (r < nums.size())?(r):(nums.size() -1);
-			}
-
-			//solution found and is not empty
-			if (result[0] != -1 && result[1] != -1)
-				return result;
-
-			//binary search using middle index
-			if (nums[ind] == target){
-				l = ind; r = ind;
-			}
-			if (nums[ind] < target){
-				l = ind + 1;
-				while ( l <= r && nums[l] == nums[ind]){
-					++l;
-				}
-			}
-			if (nums[ind] > target){
-				r = ind - 1;
-				while (l <= r && nums[r] == nums[ind]){
-					--r;
-				}
-			}
-		}
-		return result;
 	}
+	//calculate all possible combinations of nums3 and nums4
+	//if combination already exists in the map with opposite sign, than increment result
+	for (auto it3:nums3){
+		for (auto it4:nums4){
+			result += oneTwoSum[-(it3 + it4)];
+		}
+	}
+return result;
+}
 
 int main(){
-	vector<int> nums = {1,2,2};
-	int target = 2;
-	vector<int> result = searchRange(nums, target);
-	for (auto i:result)
-	std::cout << i << " ";
-	
-
+	vector<int> nums1 = {-1,-1}, 
+	nums2 = {-1,1}, 
+	nums3 = {-1,1}, 
+	nums4 = {1,-1};
+	std::cout << fourSumCount(nums1, nums2, nums3, nums4) <<"\n";
 }
