@@ -13,89 +13,96 @@
 using namespace std;
 
 /*
-225. Implement Stack using Queues
-Implement a last-in-first-out (LIFO) stack using only two queues. The implemented stack should support all the functions of a normal 
-stack (push, top, pop, and empty).
+232. Implement Queue using Stacks
+Implement a first in first out (FIFO) queue using only two stacks. 
+The implemented queue should support all the functions of a normal queue (push, peek, pop, and empty).
 
-Implement the MyStack class:
+Implement the MyQueue class:
 
-void push(int x) Pushes element x to the top of the stack.
-int pop() Removes the element on the top of the stack and returns it.
-int top() Returns the element on the top of the stack.
-boolean empty() Returns true if the stack is empty, false otherwise.
-
+void push(int x) Pushes element x to the back of the queue.
+int pop() Removes the element from the front of the queue and returns it.
+int peek() Returns the element at the front of the queue.
+boolean empty() Returns true if the queue is empty, false otherwise.
 Notes:
-You must use only standard operations of a queue, which means that only push to back, peek/pop from front, size and is empty operations are valid.
-Depending on your language, the queue may not be supported natively. You may simulate a queue using a list or deque (double-ended queue) as 
-long as you use only a queue's standard operations.
+
+You must use only standard operations of a stack, which means only push to top, peek/pop from top, size, and is empty operations are valid.
+Depending on your language, the stack may not be supported natively. You may simulate a stack using a list or deque (double-ended queue) as 
+long as you use only a stack's standard operations.
 
 1 <= x <= 9
-At most 100 calls will be made to push, pop, top, and empty.
-All the calls to pop and top are valid.
+At most 100 calls will be made to push, pop, peek, and empty.
+All the calls to pop and peek are valid.
 */
 
-class MyStack {
+class MyQueue {
 public:
-    std::queue<int> q;
-    MyStack() {
-        
+    std::stack<int> s1;
+    std::stack<int> s2;
+    MyQueue() {
     }
     
     void push(int x) {
-        q.push(x);
+        s1.push(x);
     }
     
     int pop() {
-        int t = 0;
-        int pop = 0;
-        for (size_t i = 0; i < q.size(); ++i){
-            t = q.front();
-            if (i == q.size()-1){
-                pop = t;
-                q.pop();
+        int t = 0, pop = 0;
+        for (size_t i = s1.size(); i > 0; --i){
+            if (s1.size() == 1){
+                pop = s1.top();
+                s1.pop();
                 break;
             }
-            q.pop();
-            q.push(t);
+            s2.push(s1.top());
+            s1.pop();
         }
-        return pop;
+        for (size_t i = s2.size(); i > 0; --i){
+            s1.push(s2.top());
+            s2.pop();
+        }
+    return pop;
     }
     
-    int top() {
-        return q.back();
+    int peek() {
+        int t = 0, peek = 0;
+        for (size_t i = s1.size(); i > 0; --i){
+            if (s1.size() == 1){
+                peek = s1.top();
+                break;
+            }
+            s2.push(s1.top());
+            s1.pop();
+        }
+        for (size_t i = s2.size(); i > 0; --i){
+            s1.push(s2.top());
+            s2.pop();
+        }
+    return peek;
     }
     
     bool empty() {
-        return q.empty();
+        return s1.empty();
     }
 };
 
 /**
- * Your MyStack object will be instantiated and called as such:
- * MyStack* obj = new MyStack();
+ * Your MyQueue object will be instantiated and called as such:
+ * MyQueue* obj = new MyQueue();
  * obj->push(x);
  * int param_2 = obj->pop();
- * int param_3 = obj->top();
+ * int param_3 = obj->peek();
  * bool param_4 = obj->empty();
  */
 
 int main(){
-	std::vector<int> vec {0, 1, 2, 3};
-    MyStack* obj = new MyStack();
- 	for (auto x:vec)
+	std::vector<int> vec {4, 5, 6, 7};
+    MyQueue* obj = new MyQueue();
+    for (auto x:vec)
         obj->push(x);
-
- 	int param_2 = obj->pop();
-    std::cout << "param 2: " << param_2 <<"\n";
- 	int param_3 = obj->top();
- 	std::cout << "param 3: " << param_3 <<"\n";
- 	bool param_4 = obj->empty();
-    
-    // std::queue<int> q;
-    // q.push(3);
-    // q.push(4);
-    // std::cout << "front: " << q.front() << "\n";
-    // std::cout << "end: " << q.back() << "\n";
-    
-	// std::cout << "Hello!\n";
+    int param_2 = obj->pop();
+    std::cout << "p2: " << param_2 << "\n";
+    int param_3 = obj->peek();
+    std::cout << "p3: " << param_3 << "\n";
+    bool param_4 = obj->empty();
+ 
 }
