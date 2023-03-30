@@ -12,79 +12,65 @@
 using namespace std;
 
 /*
-32. Longest Valid Parentheses
-Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses 
-substring.
+225. Implement Stack using Queues
+Implement a last-in-first-out (LIFO) stack using only two queues. The implemented stack should support all the functions of a normal 
+stack (push, top, pop, and empty).
 
-0 <= s.length <= 3 * 104
-s[i] is '(', or ')'.
+Implement the MyStack class:
+
+void push(int x) Pushes element x to the top of the stack.
+int pop() Removes the element on the top of the stack and returns it.
+int top() Returns the element on the top of the stack.
+boolean empty() Returns true if the stack is empty, false otherwise.
+
+Notes:
+You must use only standard operations of a queue, which means that only push to back, peek/pop from front, size and is empty operations are valid.
+Depending on your language, the queue may not be supported natively. You may simulate a queue using a list or deque (double-ended queue) as 
+long as you use only a queue's standard operations.
+
+1 <= x <= 9
+At most 100 calls will be made to push, pop, top, and empty.
+All the calls to pop and top are valid.
 */
 
-    int longestValidParentheses(string s) {
-		//base case of zero string length
-		if (s.length() == 0)
-			return 0;
-		std::stack<int> p;
-		int i = 0;
-		int max = 0, incr = 2;
-		for (size_t i = 0; i < s.length(); ++i){
-			if (s[i] == '('){
-				p.push(0);
-			}
-			else{// s[i] = ')'
-				if (p.empty())
-					continue;
-				int temp = p.top() + incr;
-				p.pop();
-				/*special case if there was only one element left
-				p = 0 
-				p = 2 (illegal, cannot have closing bracket with single non-zero element left : "())" )
-				*/
-				if (p.empty()){
-					if (temp == incr)
-						p.push(temp);
-					max = (incr > max)?incr:max;
-					continue;
-				}
-				/*
-				initial setup
-				1. p = 2 0 0 -> p = 2 0 temp=2
-				2. p = 2 0 2 -> p = 2 0 temp=4
-				3. p = 2 0   -> p = 2   temp=2
-				4. p = 0 0 2 -> p = 0 0 temp=4
-				5. p = 0 4   -> p = 0   temp=6
-				*/
-				if (temp == incr){//cases 1, 3
-					if (p.top() != 0){//case 3
-						temp += p.top();
-						p.pop();
-					}
-				}
-				else{//cases 2, 4, 5
-					p.pop();
-					/*
-					2. p = 2 0 -> p = 2   temp=4
-					4. p = 0 0 -> p = 0 0 temp=4
-					5. p = 0   -> p = ''  temp=6
-					*/
-					if (!p.empty() && p.top() != 0){//case 2, 5
-						temp += p.top();
-						p.pop();
-					}
-				}
-				p.push(temp);
-				max = (temp > max)?temp:max;
-			}
-		}
-		return max;
+class MyStack {
+public:
+    MyStack() {
+        
     }
+    
+    void push(int x) {
+        
+    }
+    
+    int pop() {
+        
+    }
+    
+    int top() {
+        
+    }
+    
+    bool empty() {
+        
+    }
+};
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack* obj = new MyStack();
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * int param_3 = obj->top();
+ * bool param_4 = obj->empty();
+ */
 
 int main(){
-	// string s = ")()())";
-	// string s ="()(())";
-	// string s ="())";
-	// string s =")()())";
-	// string s ="(()())";
-	string s =")()())()()(";
-	std::cout << longestValidParentheses(s) << "\n";
+	int x = 3;
+ 	MyStack* obj = new MyStack();
+ 	obj->push(x);
+ 	int param_2 = obj->pop();
+ 	int param_3 = obj->top();
+ 	bool param_4 = obj->empty();
+	
 }
