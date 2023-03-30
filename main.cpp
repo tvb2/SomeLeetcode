@@ -9,6 +9,7 @@
 #include <iterator>
 #include <functional>
 #include <stack>
+#include <queue>
 using namespace std;
 
 /*
@@ -35,24 +36,37 @@ All the calls to pop and top are valid.
 
 class MyStack {
 public:
+    std::queue<int> q;
     MyStack() {
         
     }
     
     void push(int x) {
-        
+        q.push(x);
     }
     
     int pop() {
-        
+        int t = 0;
+        int pop = 0;
+        for (size_t i = 0; i < q.size(); ++i){
+            t = q.front();
+            if (i == q.size()-1){
+                pop = t;
+                q.pop();
+                break;
+            }
+            q.pop();
+            q.push(t);
+        }
+        return pop;
     }
     
     int top() {
-        
+        return q.back();
     }
     
     bool empty() {
-        
+        return q.empty();
     }
 };
 
@@ -66,11 +80,22 @@ public:
  */
 
 int main(){
-	int x = 3;
- 	MyStack* obj = new MyStack();
- 	obj->push(x);
+	std::vector<int> vec {0, 1, 2, 3};
+    MyStack* obj = new MyStack();
+ 	for (auto x:vec)
+        obj->push(x);
+
  	int param_2 = obj->pop();
+    std::cout << "param 2: " << param_2 <<"\n";
  	int param_3 = obj->top();
+ 	std::cout << "param 3: " << param_3 <<"\n";
  	bool param_4 = obj->empty();
-	
+    
+    // std::queue<int> q;
+    // q.push(3);
+    // q.push(4);
+    // std::cout << "front: " << q.front() << "\n";
+    // std::cout << "end: " << q.back() << "\n";
+    
+	// std::cout << "Hello!\n";
 }
