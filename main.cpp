@@ -13,8 +13,8 @@
 using namespace std;
 
 /*
-94. Binary Tree Inorder Traversal
-Given the root of a binary tree, return the inorder traversal of its nodes' values.
+144. Binary Tree Preorder Traversal
+Given the root of a binary tree, return the preorder traversal of its nodes' values.
 
 The number of nodes in the tree is in the range [0, 100].
 -100 <= Node.val <= 100
@@ -31,45 +31,46 @@ The number of nodes in the tree is in the range [0, 100].
     
     void helper (TreeNode *root, std::vector<int> &result){
         if (root != nullptr){
-            helper(root->left, result);
             result.push_back(root->val);
+            helper(root->left, result);
             helper(root->right, result);
         }
     }
 
     //recursive version using helper
-    vector<int> inorderTraversal(TreeNode* root) {
-        std::vector<int> result;
-        helper(root, result);
-        return result;
-    }
-    //stack version
-    // vector<int> inorderTraversal(TreeNode* root) {
-    //     std::vector<int> res;
-    //     std::stack<TreeNode*> stack;
-    //     TreeNode *curr = root;
-    //     while (curr != nullptr || !stack.empty()) {
-    //         while (curr != nullptr) {
-    //             stack.push(curr);
-    //             curr = curr->left;
-    //         }
-    //         curr = stack.top();
-    //         stack.pop();
-    //         res.push_back(curr->val);
-    //         curr = curr->right;
-    //     }
-    //     return res;
+    // vector<int> preorderTraversal(TreeNode* root) {
+    //     std::vector<int> result;
+    //     helper(root, result);
+    //     return result;
     // }
+    //stack version
+    vector<int> preorderTraversal(TreeNode* root) {
+        std::vector<int> res;
+        std::stack<TreeNode*> st;
+        TreeNode *curr = root;
+        while (curr != nullptr || !st.empty()) {
+            while (curr != nullptr) {
+                res.push_back(curr->val);
+                st.push(curr);
+                curr = curr->left;
+            }
+            curr = st.top();
+            st.pop();
+            curr = curr->right;
+        }
+        return res;
+    }
 
 
 int main(){
 
     // {1,null,2,3};
-    TreeNode *root = new TreeNode(1);
-    root->right = new TreeNode(2);
-    root->right->left = new TreeNode(3);
+    TreeNode *root = new TreeNode(2);
+    root->right = new TreeNode(3);
+    root->left = new TreeNode(1);
+    root->left->right = new TreeNode(4);
 
-    std::vector<int> result = inorderTraversal(root);
+    std::vector<int> result = preorderTraversal(root);
     
     for (auto i:result)
         std::cout << i << "\n";
