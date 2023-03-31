@@ -13,60 +13,83 @@
 using namespace std;
 
 /*
-227. Basic Calculator II
-Given a string s which represents an expression, evaluate this expression and return its value. 
+224. Basic Calculator
 
-The integer division should truncate toward zero.
-
-You may assume that the given expression is always valid. All intermediate results will be in the range of [-231, 231 - 1].
-
+Given a string s representing a valid expression, implement a basic calculator to evaluate it, and return the result of the evaluation.
 Note: You are not allowed to use any built-in function which evaluates strings as mathematical expressions, such as eval().
-1 <= s.length <= 3 * 105
-s consists of integers and operators ('+', '-', '*', '/') separated by some number of spaces.
-s represents a valid expression.
-All the integers in the expression are non-negative integers in the range [0, 231 - 1].
-The answer is guaranteed to fit in a 32-bit integer.
-*/
 
+Example 1:
+Input: s = "1 + 1"
+Output: 2
+
+Example 2:
+Input: s = " 2-1 + 2 "
+Output: 3
+
+Example 3:
+Input: s = "(1+(4+5+2)-3)+(6+8)"
+Output: 23
+
+
+Constraints:
+1 <= s.length <= 3 * 105
+s consists of digits, '+', '-', '(', ')', and ' '.
+s represents a valid expression.
+'+' is not used as a unary operation (i.e., "+1" and "+(2 + 3)" is invalid).
+'-' could be used as a unary operation (i.e., "-1" and "-(2 + 3)" is valid).
+There will be no two consecutive operators in the input.
+Every number and running calculation will fit in a signed 32-bit integer.
+*/
+    //repeating code moved to separate function
+    void process(std::stack<int> &vals, std::stack<char> &ops, int t, int &result){
+    if (!vals.empty() && !ops.empty()){//if already some numbers and operations pending
+                    result = (ops.top() == '+')?(vals.top() + t):(vals.top() - t);
+                    vals.pop(); ops.pop();
+                    vals.push(result);
+                }
+                else if (vals.empty() && !ops.empty()){//if there are no vals but already ops (only ops possible is '-')
+                    vals.push(0-t);
+                    }
+                else{
+                    result = t;
+                    vals.push(t);
+                }
+    }
+
+    int helper (string s, int &i){
+        int result = 0;
+        std::stack<char> ops;//operations
+        std::stack<int> vals;//values
+        for (; i < s.length(); ++i){
+            //a number
+            if(s[i] >= 48 && s[i] <= 57){
+                size_t k = i;
+                std::string v = "";
+                while (s[i] >= 48 && s[i] <= 57){
+                    v += s[i];
+                    ++i;
+                }
+                int t = stoi(v);
+                process(vals, ops, t, result);
+            }
+            if (s[i] == '+' || s[i] == '-')
+                ops.push(s[i]);
+            if (s[i] == '('){
+                int t = helper(s,++i);
+                process(vals, ops, t, result);
+                continue;
+            }
+            if (s[i] == ')'){
+                break;
+            }
+        }
+        return vals.top();
+    }
 
     int calculate(string s) {
-        int result = 0;
-        int i = 0;
-        std::map<size_t, char> md;//multiply and divide
-        std::map<size_t, char> pm;//plus and minus
-        std::map<size_t, int> vals;//start indices of values
-        for (size_t j = i; j < s.length(); ++j){
-            if(s[j] >= 48 && s[j] <= 57){
-                size_t k = j;
-                std::string v = "";
-                while (s[j] >= 48 && s[j] <= 57){
-                    v += s[j];
-                    ++j;
-                }
-                vals[k] = stoi(v);
-            }
-            if (s[j] == '+' || s[j] == '-')
-                pm[j] = s[j];
-            if (s[j] == '*' || s[j] == '/')
-                md[j] = s[j];
-        }
-        for (auto it = md.begin(); it != md.end(); ++it){
-            auto itV = std::prev(vals.lower_bound(it->first));
-            if (it->second == '*')
-                itV->second *= (std::next(itV))->second;
-            else 
-                itV->second /= (std::next(itV))->second;
-            vals.erase(std::next(itV));
-        }
-        for (auto it = pm.begin(); it != pm.end(); ++it){
-            auto itV = std::prev(vals.lower_bound(it->first));
-            if (it->second == '+')
-                itV->second += (std::next(itV))->second;
-            else
-                itV->second -= (std::next(itV))->second;
-            vals.erase(std::next(itV));
-        }
-        return vals.begin()->second;
+        int i = 0, result = 0;
+        result = helper(s, i);
+        return result;
     }
 
 
@@ -74,9 +97,10 @@ int main(){
     // std::string s = "3+587 -100  * 3 / 2 + 4";
     // std::string s = " 3+5 / 2 "; 
     // std::string s = " 3/2 ";
-     std::string s = "3+2*2";
+    //  std::string s = "3+2*2";
+    // std::string s = "(1+(4+5+2)-3)+(6+8)";
+    // std::string s = "-1";
+    std::string s = "-(1+2)";
     
-    std::cout << calculate(s) << "\n";
-
- 
+    std::cout << calculate(s) << "\n"; 
 }
