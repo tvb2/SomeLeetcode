@@ -13,75 +13,70 @@
 using namespace std;
 
 /*
-145. Binary Tree Postorder Traversal
-Given the root of a binary tree, return the postorder traversal of its nodes' values.
+227. Basic Calculator II
+Given a string s which represents an expression, evaluate this expression and return its value. 
 
-The number of nodes in the tree is in the range [0, 100].
--100 <= Node.val <= 100
+The integer division should truncate toward zero.
+
+You may assume that the given expression is always valid. All intermediate results will be in the range of [-231, 231 - 1].
+
+Note: You are not allowed to use any built-in function which evaluates strings as mathematical expressions, such as eval().
+1 <= s.length <= 3 * 105
+s consists of integers and operators ('+', '-', '*', '/') separated by some number of spaces.
+s represents a valid expression.
+All the integers in the expression are non-negative integers in the range [0, 231 - 1].
+The answer is guaranteed to fit in a 32-bit integer.
 */
-// Definition for a binary tree node.
-  struct TreeNode {
-      int val;
-      TreeNode *left;
-      TreeNode *right;
-      TreeNode() : val(0), left(nullptr), right(nullptr) {}
-      TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-      TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-  };
-    
-    void helper (TreeNode *root, std::vector<int> &result){
-        if (root != nullptr){
-            if(root==nullptr)
-                return;
-            helper(root->left, result);
-            helper(root->right,result);
-            result.push_back(root->val);
-        }
-    }
 
-    //recursive version using helper
-    vector<int> postorderTraversal(TreeNode* root) {
-        std::vector<int> result;
-        helper(root, result);
-        return result;
+
+    int calculate(string s) {
+        int result = 0;
+        int i = 0;
+        std::map<size_t, char> md;//multiply and divide
+        std::map<size_t, char> pm;//plus and minus
+        std::map<size_t, int> vals;//start indices of values
+        for (size_t j = i; j < s.length(); ++j){
+            if(s[j] >= 48 && s[j] <= 57){
+                size_t k = j;
+                std::string v = "";
+                while (s[j] >= 48 && s[j] <= 57){
+                    v += s[j];
+                    ++j;
+                }
+                vals[k] = stoi(v);
+            }
+            if (s[j] == '+' || s[j] == '-')
+                pm[j] = s[j];
+            if (s[j] == '*' || s[j] == '/')
+                md[j] = s[j];
+        }
+        for (auto it = md.begin(); it != md.end(); ++it){
+            auto itV = std::prev(vals.lower_bound(it->first));
+            if (it->second == '*')
+                itV->second *= (std::next(itV))->second;
+            else 
+                itV->second /= (std::next(itV))->second;
+            vals.erase(std::next(itV));
+        }
+        for (auto it = pm.begin(); it != pm.end(); ++it){
+            auto itV = std::prev(vals.lower_bound(it->first));
+            if (it->second == '+')
+                itV->second += (std::next(itV))->second;
+            else
+                itV->second -= (std::next(itV))->second;
+            vals.erase(std::next(itV));
+        }
+        return vals.begin()->second;
     }
-    //stack version
-    //    vector<int> postorderTraversal(TreeNode* root) {    
-    //    std::vector<int> result;
-    //    std::stack<TreeNode*> st;
-    //    TreeNode *current = root;
-    //    while (current != nullptr || !st.empty()){
-    //         if(current != nullptr){
-    //             st.push(current);
-    //             result.emplace(result.begin(), current->val);
-    //             current = current->right;
-    //         }
-    //         else{
-    //             TreeNode *temp = st.top();
-    //             current = temp->left;
-    //             st.pop();
-    //         }
-    //    }
-    //    return result;
-    // }
 
 
 int main(){
-
-    // {1,null,2,3};
-    TreeNode *root = new TreeNode(25);
-    root->left = new TreeNode(15);
-    root->left->left = new TreeNode(10);
-    root->left->right = new TreeNode(22);
+    // std::string s = "3+587 -100  * 3 / 2 + 4";
+    // std::string s = " 3+5 / 2 "; 
+    // std::string s = " 3/2 ";
+     std::string s = "3+2*2";
     
-    root->right = new TreeNode(50);
-    root->right->left = new TreeNode(35);
-    root->right->right = new TreeNode(70);
-
-    std::vector<int> result = postorderTraversal(root);
-    
-    for (auto i:result)
-        std::cout << i << "\n";
+    std::cout << calculate(s) << "\n";
 
  
 }
