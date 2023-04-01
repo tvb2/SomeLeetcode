@@ -13,67 +13,42 @@
 using namespace std;
 
 /*
-2601. Prime Subtraction Operation
-You are given a 0-indexed integer array nums of length n.
+118. Pascal's Triangle
+Given an integer numRows, return the first numRows of Pascal's triangle.
 
-You can perform the following operation as many times as you want:
-
-Pick an index i that you haven’t picked before, and pick a prime p strictly less than nums[i], then subtract p from nums[i].
-Return true if you can make nums a strictly increasing array using the above operation and false otherwise.
-
-A strictly increasing array is an array whose each element is strictly greater than its preceding element.
+In Pascal's triangle, each number is the sum of the two numbers directly above it as shown:
 */
 
-bool isPrime(int n)
-{
-      // Since 0 and 1 is not
-      // prime return false.
-      if(n == 1 || n == 0) return false;
-   
-      // Run a loop from 2 to n-1
-      for(int i = 2; i*i <= n; i++)
-      {
-        // if the number is divisible by i,
-        // then n is not a prime number.
-        if(n % i == 0) return false;
-      }
-      // Otherwise n is a prime number.
-      return true;
-}
-    //return prime numbers below input value
-    std::vector<int> primeNums(int i){
-        std::vector<int> primes;
-        for (int j = 1; j < i; ++j){
-            if (isPrime(j))
-                primes.push_back(j);
-        }
-        return primes;
-    }
+    vector<vector<int>> generate(int numRows) {
+        //create a matrix numRows*numRows
+        std::vector<std::vector<int>> pascal;
 
-    bool primeSubOperation(vector<int>& nums) {
-        std::vector<int> primes;
-        for (size_t i = nums.size() - 1; i > 0; --i ){
-            
-            if(nums[i] <= nums[i - 1]){
-              primes = primeNums(nums[i - 1]);  
-              int k = nums[i - 1];
-              int j = 0;
-                while ((k >= nums[i]) && (j < primes.size()) && (k > 0)){
-                    k = nums[i - 1];
-                    k -= primes[j];
-                    ++j;
+        for (size_t i = 0; i < numRows; ++i){
+            //add another row
+            pascal.resize(pascal.size()+1);
+            //set size of the row is one item bigger than previouse
+            pascal[i].resize(i + 1);
+            for (size_t j = 0; j < pascal[i].size(); ++j){
+                //the first and las element in each row is '1'
+                if (j == 0 || j == pascal[i].size() - 1){
+                    pascal[i][j] = 1;
                 }
-                nums[i - 1] = k;
-                if (nums[i] <= nums[i - 1])
-                    return false;
-            }           
+                else
+                    //any other element is calculated as a sum of two elements above
+                    pascal[i][j] = pascal[i-1][j-1] + pascal[i-1][j];
+            }
         }
-        return true;
+        return pascal;
     }
 
 
 int main(){
-    std::vector<int> nums = {17,2};
-    
-    std::cout << boolalpha << primeSubOperation(nums) << "\n"; 
+    int numRows = 12;
+    std::vector<std::vector<int>> pascal = generate(numRows);
+    for (auto i:pascal){
+        for (auto j:i){
+            std::cout << j << " ";
+        }
+        std::cout <<"\n";
+    }
 }
