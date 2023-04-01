@@ -13,52 +13,58 @@
 using namespace std;
 
 /*
-100. Same Tree
-Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+150. Evaluate Reverse Polish Notation
+You are given an array of strings tokens that represents an arithmetic expression in a Reverse Polish Notation.
 
-Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.
+Evaluate the expression. Return an integer that represents the value of the expression.
 
- -104 <= Node.val <= 104
+Note that:
+
+The valid operators are '+', '-', '*', and '/'.
+Each operand may be an integer or another expression.
+The division between two integers always truncates toward zero.
+There will not be any division by zero.
+The input represents a valid arithmetic expression in a reverse polish notation.
+The answer and all the intermediate calculations can be represented in a 32-bit integer.
+
+1 <= tokens.length <= 104
+tokens[i] is either an operator: "+", "-", "*", or "/", or an integer in the range [-200, 200].
 */
 
-// * Definition for a binary tree node.
-  struct TreeNode {
-      int val;
-      TreeNode *left;
-      TreeNode *right;
-      TreeNode() : val(0), left(nullptr), right(nullptr) {}
-      TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-      TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-  };
- 
-    bool isSameTree(TreeNode* p, TreeNode* q) {
-        std::stack<TreeNode*> stP, stQ;
-        TreeNode *cp = p;
-        TreeNode *cq = q;
-        while (cp || cq || !stP.empty() || !stQ.empty()){
-            while (cp || cq){
-                if (!cp || !cq || (cp->val != cq->val))
-                    return false;
-                stP.push(cp); stQ.push(cq);
-                cp = cp->left;
-                cq = cq->left;
+    int evalRPN(vector<string>& tokens) {
+        if (tokens.size() == 1)
+            return std::stoi(tokens[0]);
+        int result = 0, first = 0, second = 0;
+        std::stack<int> s;
+        for (size_t i = 0; i < tokens.size(); ++i){
+            if (tokens[i] == "+" ||  tokens[i] == "-" || tokens[i] == "/" || tokens[i] == "*"){
+                    second = s.top(); s.pop();
+                    first = s.top(); s.pop();
+                if (tokens[i] == "+"){
+                    s.push(first + second);
+                }
+                else if (tokens[i] == "-"){
+                    s.push(first - second);
+                }
+                else if (tokens[i] == "/" ){
+                    s.push(first / second);
+                }
+                else{// '*'
+                    s.push(first * second);
+                }
             }
-            cp = stP.top()->right; cq = stQ.top()->right;
-            stP.pop(); stQ.pop();
+            else{//a valid signed or unsigned integer
+                s.push(std::stoi(tokens[i]));
+            }
         }
-        return true;
+        return s.top();
     }
 
 
 int main(){
-     TreeNode *p = new TreeNode(1);
-     p->left = new TreeNode(2);
-     p->right = new TreeNode(1);
-
-     TreeNode *q = new TreeNode(1);
-     q->right = new TreeNode(1);
-     q->right = new TreeNode(2);
-
-    std::cout << boolalpha << isSameTree(p, q) << "\n";
+    std::vector<std::string> tokens = {"10","6","9","3","+","-11","*","/","*","17","+","5","+"};
+    // std::cout << std::stoi("-100") << "\n";
+    
+    std::cout << evalRPN(tokens) << "\n";
 
 }
