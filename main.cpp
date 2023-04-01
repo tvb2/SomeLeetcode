@@ -13,42 +13,52 @@
 using namespace std;
 
 /*
-118. Pascal's Triangle
-Given an integer numRows, return the first numRows of Pascal's triangle.
+100. Same Tree
+Given the roots of two binary trees p and q, write a function to check if they are the same or not.
 
-In Pascal's triangle, each number is the sum of the two numbers directly above it as shown:
+Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.
+
+ -104 <= Node.val <= 104
 */
 
-    vector<vector<int>> generate(int numRows) {
-        //create a matrix numRows*numRows
-        std::vector<std::vector<int>> pascal;
-
-        for (size_t i = 0; i < numRows; ++i){
-            //add another row
-            pascal.resize(pascal.size()+1);
-            //set size of the row is one item bigger than previouse
-            pascal[i].resize(i + 1);
-            for (size_t j = 0; j < pascal[i].size(); ++j){
-                //the first and las element in each row is '1'
-                if (j == 0 || j == pascal[i].size() - 1){
-                    pascal[i][j] = 1;
-                }
-                else
-                    //any other element is calculated as a sum of two elements above
-                    pascal[i][j] = pascal[i-1][j-1] + pascal[i-1][j];
+// * Definition for a binary tree node.
+  struct TreeNode {
+      int val;
+      TreeNode *left;
+      TreeNode *right;
+      TreeNode() : val(0), left(nullptr), right(nullptr) {}
+      TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+      TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+  };
+ 
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        std::stack<TreeNode*> stP, stQ;
+        TreeNode *cp = p;
+        TreeNode *cq = q;
+        while (cp || cq || !stP.empty() || !stQ.empty()){
+            while (cp || cq){
+                if (!cp || !cq || (cp->val != cq->val))
+                    return false;
+                stP.push(cp); stQ.push(cq);
+                cp = cp->left;
+                cq = cq->left;
             }
+            cp = stP.top()->right; cq = stQ.top()->right;
+            stP.pop(); stQ.pop();
         }
-        return pascal;
+        return true;
     }
 
 
 int main(){
-    int numRows = 12;
-    std::vector<std::vector<int>> pascal = generate(numRows);
-    for (auto i:pascal){
-        for (auto j:i){
-            std::cout << j << " ";
-        }
-        std::cout <<"\n";
-    }
+     TreeNode *p = new TreeNode(1);
+     p->left = new TreeNode(2);
+     p->right = new TreeNode(1);
+
+     TreeNode *q = new TreeNode(1);
+     q->right = new TreeNode(1);
+     q->right = new TreeNode(2);
+
+    std::cout << boolalpha << isSameTree(p, q) << "\n";
+
 }
