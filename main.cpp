@@ -13,30 +13,48 @@
 using namespace std;
 
 /*
-1480. Running Sum of 1d Array
-Given an array nums. We define a running sum of an array as runningSum[i] = sum(nums[0]…nums[i]).
+724. Find Pivot Index
+Given an array of integers nums, calculate the pivot index of this array.
 
-Return the running sum of nums.
+The pivot index is the index where the sum of all the numbers strictly to the left of the index is equal to the sum of all the numbers strictly to the index's right.
 
-1 <= nums.length <= 1000
--10^6 <= nums[i] <= 10^6
+If the index is on the left edge of the array, then the left sum is 0 because there are no elements to the left. This also applies to the right edge of the array.
+
+Return the leftmost pivot index. If no such index exists, return -1.
+
+1 <= nums.length <= 104
+-1000 <= nums[i] <= 1000
 */
 
 
-    vector<int> runningSum(vector<int>& nums) {
-        for (size_t i = 1; i < nums.size(); ++i){
-            nums[i] += nums[i-1];
+        //try using DP (there is a probably better way calculating the total sum of all the elements and 
+        // than while iterating through nums just calculate left sum and compare it to Total - nums[i] - left = right)
+    int pivotIndex(vector<int>& nums) {
+        if (nums.size() == 1)
+            return 0;
+        int size = nums.size();
+        std::vector<int> left(size); // vector of sums of all left items
+        std::vector<int> right(size); // vector of sums of all right items
+        left[0] = 0; left[1] = nums[0]; //base case of first and last sums match first and last nums elements
+        right[size - 1] = 0; right[size - 2] =nums[size - 1];
+        for (int l = 2, r = size - 3; l < size || r >= 0; ++l, --r){
+            left[l] = nums[l - 1] + left[l - 1];
+            right[r] = nums[r + 1] + right[r + 1];
         }
-        return nums;
+        //if element of left and right sums match, than this is our result
+        for (size_t i = 0; i < size; ++i){
+            if (left[i] == right[i])
+                return i;
+        }
+        return -1;
     }
 
 
 
 int main(){
-    std::vector<int> nums = {3,1,2,10,1};
+    // std::vector<int> nums = {1,7,3,6,5,6};
+    std::vector<int> nums = {-1,-1,0,1,1,0};
     
-    std::vector<int> result =  runningSum(nums);
-    for (auto i:result)
-    std::cout << i << " " << "\n";
+    std::cout << pivotIndex(nums) << "\n";
 
 }
