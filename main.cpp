@@ -13,41 +13,30 @@
 using namespace std;
 
 /*
-387. First Unique Character in a String
-Given a string s, find the first non-repeating character in it and return its index. If it does not exist, return -1.
-1 <= s.length <= 105
-s consists of only lowercase English letters.
+1480. Running Sum of 1d Array
+Given an array nums. We define a running sum of an array as runningSum[i] = sum(nums[0]…nums[i]).
+
+Return the running sum of nums.
+
+1 <= nums.length <= 1000
+-10^6 <= nums[i] <= 10^6
 */
 
 
-    int firstUniqChar(string s) {
-        if (s.length() == 0)
-            return -1;
-        std::map<char,int> ind;
-        int min = s.length();
-        for (int i = 0; i < s.length(); ++i){
-            if (ind.find(s[i]) != ind.end()){
-                ind[s[i]] = -1;
-            }
-            else{
-                ind[s[i]] = i;
-            }
+    vector<int> runningSum(vector<int>& nums) {
+        for (size_t i = 1; i < nums.size(); ++i){
+            nums[i] += nums[i-1];
         }
-        for (auto i = ind.begin(); i != ind.end(); ++i){
-            if (i->second != -1){
-                if (i->second < min){
-                    min = i->second;
-                }
-            }
-        }
-        return (min == s.length())?(-1):min;
+        return nums;
     }
 
 
 
 int main(){
-    std::string s = "aa";
+    std::vector<int> nums = {3,1,2,10,1};
     
-    std::cout << firstUniqChar(s) << "\n";
+    std::vector<int> result =  runningSum(nums);
+    for (auto i:result)
+    std::cout << i << " " << "\n";
 
 }
