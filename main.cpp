@@ -13,35 +13,38 @@
 using namespace std;
 
 /*
-121. Best Time to Buy and Sell Stock
-You are given an array prices where prices[i] is the price of a given stock on the ith day.
+409. Longest Palindrome
+Given a string s which consists of lowercase or uppercase letters, return the length of the longest palindrome that can be built with those letters.
 
-You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
+Letters are case sensitive, for example, "Aa" is not considered a palindrome here.
 
-Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
-1 <= prices.length <= 105
-0 <= prices[i] <= 104
+1 <= s.length <= 2000
+s consists of lowercase and/or uppercase English letters only.
 */
 
-int maxProfit(vector<int>& prices) {
-    if (prices.size() < 2)
+int longestPalindrome(string s) {
+    if (s.length() == 0)
         return 0;
-    int size = prices.size();
+    if (s.length() == 1)
+        return 1;
     int result = 0;
-    std::vector<int> min(size);
-    std::vector<int> max(size);
-    min[0] = prices[0]; max[size - 1] = prices[size -1];
-    for (int l = 0, r = size - 2; l < size || r >= 0; ++l, --r){
-        min[l] = (prices[l] < min[l - 1])?(prices[l]):min[l - 1];
-        max[r] = (prices[r] > max[r + 1])?(prices[r]):max[r + 1];
+    std::map<char, int> alpha;
+    for (size_t i = 0; i < s.length(); ++i){
+        ++alpha[s[i]];
     }
-    for (int i = 0; i < size; ++i){
-        result = (max[i] - min[i] > result)?(max[i] - min[i]):result;
+    bool plusOne = false;
+    for (auto it = alpha.begin(); it != alpha.end(); ++it){
+        if (it->second > 1){
+            result += it->second/2*2;
+        }
+        if (it->second%2 == 1 && result%2 == 0)
+                ++result;
     }
     return result;
 }
 
 int main(){
-    std::vector<int> prices = {1};
-    std::cout << maxProfit(prices) << "\n";
+    std::string s = "ccc";
+    // std::string s = "a";
+    std::cout << longestPalindrome(s) << "\n";
 }
