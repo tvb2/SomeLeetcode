@@ -13,48 +13,33 @@
 using namespace std;
 
 /*
-724. Find Pivot Index
-Given an array of integers nums, calculate the pivot index of this array.
+392. Is Subsequence
+Given two strings s and t, return true if s is a subsequence of t, or false otherwise.
 
-The pivot index is the index where the sum of all the numbers strictly to the left of the index is equal to the sum of all the numbers strictly to the index's right.
+A subsequence of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the 
+relative positions of the remaining characters. (i.e., "ace" is a subsequence of "abcde" while "aec" is not).
 
-If the index is on the left edge of the array, then the left sum is 0 because there are no elements to the left. This also applies to the right edge of the array.
-
-Return the leftmost pivot index. If no such index exists, return -1.
-
-1 <= nums.length <= 104
--1000 <= nums[i] <= 1000
+0 <= s.length <= 100
+0 <= t.length <= 104
+s and t consist only of lowercase English letters.
 */
 
-
-        //try using DP (there is a probably better way calculating the total sum of all the elements and 
-        // than while iterating through nums just calculate left sum and compare it to Total - nums[i] - left = right)
-    int pivotIndex(vector<int>& nums) {
-        if (nums.size() == 1)
-            return 0;
-        int size = nums.size();
-        std::vector<int> left(size); // vector of sums of all left items
-        std::vector<int> right(size); // vector of sums of all right items
-        left[0] = 0; left[1] = nums[0]; //base case of first and last sums match first and last nums elements
-        right[size - 1] = 0; right[size - 2] =nums[size - 1];
-        for (int l = 2, r = size - 3; l < size || r >= 0; ++l, --r){
-            left[l] = nums[l - 1] + left[l - 1];
-            right[r] = nums[r + 1] + right[r + 1];
+    //searching t for symbols from s starting at the position of previousely found symbol
+    bool isSubsequence(string s, string t) {
+        size_t it = 0, j = 0; // indices of t to search for symbols from s
+        for (size_t i = 0; i < s.size(); ++i){//if there is no occurrence of s[i] in t from pos=it to the end of the string, return false
+            j = t.find_first_of(s[i], it); 
+            if (j == std::string::npos)
+                return false;
+            it = j+1;
         }
-        //if element of left and right sums match, than this is our result
-        for (size_t i = 0; i < size; ++i){
-            if (left[i] == right[i])
-                return i;
-        }
-        return -1;
+        return true;
     }
 
 
 
 int main(){
-    // std::vector<int> nums = {1,7,3,6,5,6};
-    std::vector<int> nums = {-1,-1,0,1,1,0};
-    
-    std::cout << pivotIndex(nums) << "\n";
+    std::string s = "axc", t = "ahbgdc";
+    std::cout<< boolalpha << isSubsequence(s, t) << "\n";
 
 }
