@@ -14,70 +14,59 @@
 using namespace std;
 
 /*
-235. Lowest Common Ancestor of a Binary Search Tree
-Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.
+733. Flood Fill. Easy
+An image is represented by an m x n integer grid image where image[i][j] represents the pixel value of the image.
 
-According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as 
-descendants (where we allow a node to be a descendant of itself).”
+You are also given three integers sr, sc, and color. You should perform a flood fill on the image starting from the pixel image[sr][sc].
 
-The number of nodes in the tree is in the range [2, 105].
--109 <= Node.val <= 109
-All Node.val are unique.
-p != q
-p and q will exist in the BST.
+To perform a flood fill, consider the starting pixel, plus any pixels connected 4-directionally to the starting pixel of the same color as the starting pixel, plus any pixels connected 4-directionally to those pixels (also with the same color), and so on. Replace the color of all of the aforementioned pixels with color.
+
+Return the modified image after performing the flood fill.
+
+Constraints:
+
+m == image.length
+n == image[i].length
+1 <= m, n <= 50
+0 <= image[i][j], color < 216
+0 <= sr < m
+0 <= sc < n
 */
- // Definition for a binary tree node.
-  struct TreeNode {
-      int val;
-      TreeNode *left;
-      TreeNode *right;
-      TreeNode() : val(0), left(nullptr), right(nullptr) {}
-      TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-      TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-  };
 
-    bool lca(TreeNode* root, TreeNode* p, TreeNode* q, TreeNode &result){
-        int mid = 0, left = 0, right = 0;
-        if (!root)
-            return false;
-        left = lca(root->left, p, q, result);
-        right = lca(root->right, p, q, result);
-        if (root->val == p->val || root->val == q->val)
-            mid = 1;
 
-        if (left + mid + right >= 2){
-            result.val = root->val;
+    //recursive solution
+    void helper(vector<vector<int>>& image, int sr, int sc, int color, int current){
+        if (sr < 0 || sr >= image.size() || sc < 0 || sc >= image[0].size())
+            return;
+        if (image[sr][sc] == current){
+            image[sr][sc] = color;
+            helper(image, (sr + 1), sc, color, current);
+            helper(image, (sr - 1), sc, color, current);
+            helper(image, sr, (sc + 1), color, current);
+            helper(image, sr, (sc - 1), color, current);
         }
-        return (left || mid || right);
     }
-    
-    //implementing editorial solution using recursive approach and three flags: mid, left & right. 
-    //LCA is when 2oo3 flags are set to 1;
-    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-        TreeNode result;
-        lca(root, p, q, result);
-        TreeNode * res = new TreeNode(result.val);
-        return res;
+
+
+    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
+        int current = image[sr][sc];
+        helper(image, sr, sc, color, current);
+        return image;
     }
 
 int main(){
-    // [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
-    //root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
-    //3,5,1,6,2,0,8,null,null,7,4
-    TreeNode* root = new TreeNode(3);
-    root->left = new TreeNode(5);
-    root->left->left = new TreeNode(6);
-    root->left->right = new TreeNode(2);
-    root->left->right->left = new TreeNode(7);
-    root->left->right->right= new TreeNode(4);
-    
-    root->right = new TreeNode(1);
-    root->right->right= new TreeNode(0);
-    root->right->left= new TreeNode(8);
+    std::vector<std::vector<int>> image = {
+        {0,0,0},
+        {0,0,0},
+        // {1,0,1}
+    }; 
+    int  sr = 0, sc = 0, color = 2;
+    std::vector<std::vector<int>> result = floodFill(image, sr, sc, color);
+    for (auto i:result){
+        for (auto j:i){
+            std::cout<< j <<" ";
+        }
+        std::cout << "\n";
+    }
 
-    TreeNode* p = new TreeNode(5);
-    TreeNode* q = new TreeNode(4);
-    
-    TreeNode* result = lowestCommonAncestor(root, p, q);
-    std::cout<< result->val <<"\n";
 }
