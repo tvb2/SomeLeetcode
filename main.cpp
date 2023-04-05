@@ -10,20 +10,21 @@
 #include <functional>
 #include <stack>
 #include <queue>
+#include <iomanip>
 using namespace std;
 
 /*
-98. Validate Binary Search Tree. Medium
-Given the root of a binary tree, determine if it is a valid binary search tree (BST).
+235. Lowest Common Ancestor of a Binary Search Tree
+Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.
 
-A valid BST is defined as follows:
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as 
+descendants (where we allow a node to be a descendant of itself).”
 
-The left subtree of a node contains only nodes with keys less than the node's key.
-The right subtree of a node contains only nodes with keys greater than the node's key.
-Both the left and right subtrees must also be binary search trees.
-
-The number of nodes in the tree is in the range [1, 104].
--2^31 <= Node.val <= 2^31 - 1
+The number of nodes in the tree is in the range [2, 105].
+-109 <= Node.val <= 109
+All Node.val are unique.
+p != q
+p and q will exist in the BST.
 */
  // Definition for a binary tree node.
   struct TreeNode {
@@ -34,42 +35,49 @@ The number of nodes in the tree is in the range [1, 104].
       TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
       TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
   };
- 
-    //using recursive approach
-    bool helper (TreeNode* root, long long  min, long long  max){
-        //if we have reached the end of the tree, obviousely we are good
+
+    bool lca(TreeNode* root, TreeNode* p, TreeNode* q, TreeNode &result){
+        int mid = 0, left = 0, right = 0;
         if (!root)
-            return true;
-        //if left element is not less than root - not Valid
-        if (root->left && (root->left->val >= root->val || root->left->val >= max || root->left->val <= min))
             return false;
-        //if right element is not greater than root - not Valid
-        if (root->right && (root->right->val <= root->val || root->right->val >= max || root->right->val <= min))
-            return false;
-        //recursively check both left and right branches. Both must be valid.
-        return (helper(root->left, min, root->val) && helper(root->right, root->val, max));
+        left = lca(root->left, p, q, result);
+        right = lca(root->right, p, q, result);
+        if (root->val == p->val || root->val == q->val)
+            mid = 1;
+
+        if (left + mid + right >= 2){
+            result.val = root->val;
+        }
+        return (left || mid || right);
     }
-
-
-    bool isValidBST(TreeNode* root) {
-        if (!root)
-            return true;
-        //long long is used to take into account the case when one of the values is min or max and it should be valid
-        long long min = static_cast<long long>(std::numeric_limits<int>::min()) - 1; 
-        long long max = static_cast<long long>(std::numeric_limits<int>::max()) + 1;
-        return (helper(root, min, max));
+    
+    //implementing editorial solution using recursive approach and three flags: mid, left & right. 
+    //LCA is when 2oo3 flags are set to 1;
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode result;
+        lca(root, p, q, result);
+        TreeNode * res = new TreeNode(result.val);
+        return res;
     }
 
 int main(){
-    // 3,1,5,0,2,4,6  -2147483648,null,2147483647
-    TreeNode* root = new TreeNode(-2147483648);
-    // root->left = new TreeNode(26);
-    // root->left->left = new TreeNode(19);
-    // root->left->left->right = new TreeNode(27);
+    // [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+    //root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+    //3,5,1,6,2,0,8,null,null,7,4
+    TreeNode* root = new TreeNode(3);
+    root->left = new TreeNode(5);
+    root->left->left = new TreeNode(6);
+    root->left->right = new TreeNode(2);
+    root->left->right->left = new TreeNode(7);
+    root->left->right->right= new TreeNode(4);
     
-    root->right = new TreeNode(2147483647);
-    // root->right->right= new TreeNode(56);
-    // root->right->right = new TreeNode(7);
+    root->right = new TreeNode(1);
+    root->right->right= new TreeNode(0);
+    root->right->left= new TreeNode(8);
+
+    TreeNode* p = new TreeNode(5);
+    TreeNode* q = new TreeNode(4);
     
-    std::cout<< boolalpha << isValidBST(root) <<"\n";
+    TreeNode* result = lowestCommonAncestor(root, p, q);
+    std::cout<< result->val <<"\n";
 }
