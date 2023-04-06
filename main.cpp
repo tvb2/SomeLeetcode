@@ -14,59 +14,51 @@
 using namespace std;
 
 /*
-733. Flood Fill. Easy
-An image is represented by an m x n integer grid image where image[i][j] represents the pixel value of the image.
+200. Number of Islands
+Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
 
-You are also given three integers sr, sc, and color. You should perform a flood fill on the image starting from the pixel image[sr][sc].
-
-To perform a flood fill, consider the starting pixel, plus any pixels connected 4-directionally to the starting pixel of the same color as the starting pixel, plus any pixels connected 4-directionally to those pixels (also with the same color), and so on. Replace the color of all of the aforementioned pixels with color.
-
-Return the modified image after performing the flood fill.
-
-Constraints:
-
-m == image.length
-n == image[i].length
-1 <= m, n <= 50
-0 <= image[i][j], color < 216
-0 <= sr < m
-0 <= sc < n
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+m == grid.length
+n == grid[i].length
+1 <= m, n <= 300
+grid[i][j] is '0' or '1'.
 */
 
-
-    //recursive solution
-    void helper(vector<vector<int>>& image, int sr, int sc, int color, int current){
+ //recursive solution
+    bool helper(vector<vector<char>>& image, int sr, int sc){
+        bool found = 0;
         if (sr < 0 || sr >= image.size() || sc < 0 || sc >= image[0].size())
-            return;
-        if (image[sr][sc] == current){
-            image[sr][sc] = color;
-            helper(image, (sr + 1), sc, color, current);
-            helper(image, (sr - 1), sc, color, current);
-            helper(image, sr, (sc + 1), color, current);
-            helper(image, sr, (sc - 1), color, current);
+            return 0;
+        if (image[sr][sc] == '1'){
+            found = 1;
+            image[sr][sc] = '0';
+            helper(image, (sr + 1), sc);
+            helper(image, (sr - 1), sc);
+            helper(image, sr, (sc + 1));
+            helper(image, sr, (sc - 1));
         }
+        return found;
     }
 
-
-    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
-        int current = image[sr][sc];
-        helper(image, sr, sc, color, current);
-        return image;
+    int numIslands(vector<vector<char>>& grid) {
+        if (grid.empty())
+            return 0;
+        int count = 0;
+        for (size_t i = 0; i < grid.size(); ++i){
+            for (size_t j = 0; j < grid[0].size(); ++j){
+                count += helper(grid, i, j);
+            }
+        }
+     return count;   
     }
 
 int main(){
-    std::vector<std::vector<int>> image = {
-        {0,0,0},
-        {0,0,0},
-        // {1,0,1}
-    }; 
-    int  sr = 0, sc = 0, color = 2;
-    std::vector<std::vector<int>> result = floodFill(image, sr, sc, color);
-    for (auto i:result){
-        for (auto j:i){
-            std::cout<< j <<" ";
-        }
-        std::cout << "\n";
-    }
+    std::vector<std::vector<char>> grid = {
+  {'1','1','1','1','0'},
+  {'1','1','0','1','0'},
+  {'1','1','0','0','0'},
+  {'0','0','0','0','0'}
+    };
+    std::cout << numIslands(grid) << "\n";
 
 }
