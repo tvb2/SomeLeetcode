@@ -14,51 +14,62 @@
 using namespace std;
 
 /*
-200. Number of Islands
-Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
+1254. Number of Closed Islands. Medium
+Given a 2D grid consists of 0s (land) and 1s (water).  
+An island is a maximal 4-directionally connected group of 0s and a closed island is an island totally (all left, top, right, bottom) surrounded by 1s.
 
-An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
-m == grid.length
-n == grid[i].length
-1 <= m, n <= 300
-grid[i][j] is '0' or '1'.
+Return the number of closed islands.
 */
 
  //recursive solution
-    bool helper(vector<vector<char>>& image, int sr, int sc){
-        bool found = 0;
-        if (sr < 0 || sr >= image.size() || sc < 0 || sc >= image[0].size())
-            return 0;
-        if (image[sr][sc] == '1'){
-            found = 1;
-            image[sr][sc] = '0';
-            helper(image, (sr + 1), sc);
-            helper(image, (sr - 1), sc);
-            helper(image, sr, (sc + 1));
-            helper(image, sr, (sc - 1));
+    bool helper(vector<vector<int>>& image, int sr, int sc, bool &found, bool &bad){
+        if (sr < 1 || sr >= image.size() - 1 || sc < 1 || sc >= image[0].size() - 1){
+            if (image[sr][sc] == 0){
+                found = 0;
+                bad = 1;
+            }
+            return found;
+        }
+        if (image[sr][sc] == 0){
+            found = bad?0:1;
+            image[sr][sc] = 2;
+            helper(image, (sr + 1), sc, found, bad);
+            helper(image, (sr - 1), sc, found, bad);
+            helper(image, sr, (sc + 1), found, bad);
+            helper(image, sr, (sc - 1), found, bad);
         }
         return found;
     }
 
-    int numIslands(vector<vector<char>>& grid) {
+    //using solution from one of previous tasks
+    //using two bool flags: one to indicate that we have found a candidate for an islad
+    //another one is a flag that discards the candidate if the island appears to be adjacent to one of the edges of the grid
+    int closedIsland(vector<vector<int>>& grid) {
         if (grid.empty())
             return 0;
         int count = 0;
-        for (size_t i = 0; i < grid.size(); ++i){
-            for (size_t j = 0; j < grid[0].size(); ++j){
-                count += helper(grid, i, j);
+        for (size_t i = 1; i < grid.size() - 1; ++i){
+            for (size_t j = 1; j < grid[0].size() - 1; ++j){
+                bool found = 0, bad = 0;
+                count += helper(grid, i, j, found, bad);
             }
         }
      return count;   
     }
 
 int main(){
-    std::vector<std::vector<char>> grid = {
-  {'1','1','1','1','0'},
-  {'1','1','0','1','0'},
-  {'1','1','0','0','0'},
-  {'0','0','0','0','0'}
+    std::vector<std::vector<int>> grid = {
+    {0,0,1,1,0,1,0,0,1,0},
+    {1,1,0,1,1,0,1,1,1,0},
+    {1,0,1,1,1,0,0,1,1,0},
+    {0,1,1,0,0,0,0,1,0,1},
+    {0,0,0,0,0,0,1,1,1,0},
+    {0,1,0,1,0,1,0,1,1,1},
+    {1,0,1,0,1,1,0,0,0,1},
+    {1,1,1,1,1,1,0,0,0,0},
+    {1,1,1,0,0,1,0,1,0,1},
+    {1,1,1,0,1,1,0,1,1,0}
     };
-    std::cout << numIslands(grid) << "\n";
+    std::cout << closedIsland(grid) << "\n";
 
 }
