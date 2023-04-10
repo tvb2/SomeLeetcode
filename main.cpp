@@ -14,50 +14,45 @@
 using namespace std;
 
 /*
-299. Bulls and Cows
-You are playing the Bulls and Cows game with your friend.
+844. Backspace String Compare. Easy
+Given two strings s and t, return true if they are equal when both are typed into empty text editors. '#' means a backspace character.
 
-You write down a secret number and ask your friend to guess what the number is. When your friend makes a guess, you provide a hint with the following info:
-
-The number of "bulls", which are digits in the guess that are in the correct position.
-The number of "cows", which are digits in the guess that are in your secret number but are located in the wrong position. Specifically, the non-bull digits in the guess that could be rearranged such that they become bulls.
-Given the secret number secret and your friend's guess guess, return the hint for your friend's guess.
-
-The hint should be formatted as "xAyB", where x is the number of bulls and y is the number of cows. Note that both secret and guess may contain duplicate digits.
-1 <= secret.length, guess.length <= 1000
-secret.length == guess.length
-secret and guess consist of digits only.
+Note that after backspacing an empty text, the text will continue empty.    
+1 <= s.length, t.length <= 200
+s and t only contain lowercase letters and '#' characters.
 */
 
-    /*using two freq maps s and g for secret and guess;
-    than compare each symbol fo secret with same position in guess
-    if they are the same, increment bulls
-    if they are not the same, increment freq of secret[i] in s and guess[i] in g
-    finally, cows is a total sum of min of s[i] and g[i]
-    */
-    string getHint(string secret, string guess) {
-        std::string result = "";
-        std::map<int, int> s{{0,0}, {1,0}, {2,0}, {3, 0}, {4,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}}, g = s;
-        int bulls{0}, cows{0};
-        bulls = 0; cows = 0;
-        for (size_t i = 0; i < secret.length(); ++i){
-            if (secret[i] == guess[i]){
-                ++bulls;
+    bool backspaceCompare(string s, string t) {
+        std::stack<char> ss, ts;
+        size_t max = std::max(s.length(), t.length());
+        for (size_t i = 0; i < max; ++i){
+            if (i < s.length()){
+                if (s[i] == '#' && !ss.empty()){
+                    ss.pop();
+                }
+                else{
+                    ss.push(s[i]);
+                }
             }
-            else{
-                ++s[secret[i]];
-                ++g[guess[i]];
+            if (i < t.length()){
+                if (t[i] == '#' && !ts.empty()){
+                    ts.pop();
+                }
+                else{
+                    ts.push(s[i]);
+                }
             }
         }
-        for (size_t i = 0; i < s.size(); ++i){
-            cows += std::min(s[i], g[i]);
+        while (!ss.empty() & !ts.empty()){
+            if (ss.top() != ts.top())
+                return false;
+            ss.pop(); ts.pop();
         }
-        result = std::to_string(bulls) + 'A' + std::to_string(cows) + 'B';
-    return result;
+        return (ss.empty() && ts.empty());
     }
 
 int main(){
-     std::string secret = "2222", guess = "0000";
-     std::cout << getHint(secret, guess) << "\n";
+     std::string s = "xywrrmp", t = "xywrrmu#p";
+     std::cout << boolalpha << backspaceCompare(s, t) << "\n";
 
 }
