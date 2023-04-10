@@ -14,62 +14,40 @@
 using namespace std;
 
 /*
-394. Decode String
-Given an encoded string, return its decoded string.
+1046. Last Stone Weight. Easy
+You are given an array of integers stones where stones[i] is the weight of the ith stone.
 
-The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
+We are playing a game with the stones. On each turn, we choose the heaviest two stones and smash them together. 
+Suppose the heaviest two stones have weights x and y with x <= y. The result of this smash is:
 
-You may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc. Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, k. For example, there will not be input like 3a or 2[4].
+If x == y, both stones are destroyed, and
+If x != y, the stone of weight x is destroyed, and the stone of weight y has new weight y - x.
+At the end of the game, there is at most one stone left.
 
-The test cases are generated so that the length of the output will never exceed 105.
-1 <= s.length <= 30
-s consists of lowercase English letters, digits, and square brackets '[]'.
-s is guaranteed to be a valid input.
-All the integers in s are in the range [1, 300].
+Return the weight of the last remaining stone. If there are no stones left, return 0.
+1 <= stones.length <= 30
+1 <= stones[i] <= 1000
 */
 
-    //helper recursive functions
-    std::string getString(std::string s, size_t &i){
-        std::string result = "";
-        std::string t = "";
-        for (; i < s.size(); ){
-            //s[i] is k (a number):
-            if (s[i] >= 48 && s[i] <= 57){
-                t = "";
-                while (s[i] != '['){
-                    t += s[i];
-                    ++i;
-                }
-                ++i;
-                int k = std::stoi(t); //get the number - factor for the next string
-                t = getString(s, i);//get the string recursively
-                for (int i = 0; i < k; ++i){//append the string k times to the answer
-                    result.append(t);
-                }
-            }
-            else if (s[i] != ']'){
-                result += s[i];//get the string
-                ++i;
-            }
-            else{
-                ++i;
-                return result;
-            }
+    int lastStoneWeight(vector<int>& stones) {
+        //base case
+        if (stones.size() == 1)
+            return stones[0];
+        std::priority_queue<int> q{stones.begin(), stones.end()};
+        int temp1 = 0, temp2 = 0;
+        while (q.size() > 1){
+            temp1 = q.top(); q.pop();
+            temp2 = q.top(); q.pop();
+            if (temp1 == temp2)
+                continue;
+            temp1 = (temp1 < temp2)?(temp2 - temp1):(temp1 - temp2);
+            q.push(temp1);
         }
-        return result;
-    }
-
-
-    string decodeString(string s) {
-        //min size of string with brackets is 4, i.g. "1[a]". If less -must be a string without repetitions
-        if (s.size() < 4)
-            return s;
-        size_t i = 0;
-        return getString(s, i);
+        return (q.size() == 1)?q.top():0;
     }
 
 int main(){
-     std::string s = "3[a2[c]]";
-     std::cout << decodeString(s) << "\n";
+     std::vector<int> stones = {2,7,4,1,8,1};
+     std::cout << lastStoneWeight(stones) << "\n";
 
 }
