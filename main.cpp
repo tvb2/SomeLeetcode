@@ -14,48 +14,33 @@
 using namespace std;
 
 /*
-424. Longest Repeating Character Replacement. Medium
-You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character.
- You can perform this operation at most k times.
+62. Unique Paths. Medium
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). 
+The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
 
-Return the length of the longest substring containing the same letter you can get after performing the above operations.
-1 <= s.length <= 105
-s consists of only uppercase English letters.
-0 <= k <= s.length
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+The test cases are generated so that the answer will be less than or equal to 2 * 109.
+1 <= m, n <= 100
 */
 
-    //implementing editorial solution with sliding window. See Leetcode for details
-    int characterReplacement(string s, int k) {
-        int result = 0;
-        //if we can replace all characters in s, then k is the answer
-        if (k >= s.length())
-            return k;
-        std::map<char, int> freq;
-        int maxFreq = 0;//frequency of the character that was ever found to be maximum
-        //fill up frequency map with k first characters
-        for (size_t i = 0; i < s.size() && i < k; ++i){
-            ++freq[s[i]];
-            if (freq[s[i]] > maxFreq)
-                maxFreq = freq[s[i]];
-        }
-        size_t l = 0, r = k;
-        for (; r < s.length(); ++r){
-            ++freq[s[r]];
-            if (freq[s[r]] >= maxFreq){
-                maxFreq = freq[s[r]];
-            }
-            if (r - l + 1 - maxFreq > k){
-                --freq[s[l]];
-                ++l;
-            }
+int uniquePaths(int m, int n) {
+    std::vector<std::vector<int>> field(m);
+    //initialize the field with ones (basic case for row 1 and colum 1)
+    for (auto &i:field)
+        i.resize(n, 1);
+    //number of combinations for other cells is sum of [i-1][j] and [i][j-1]
+    for (size_t i = 1; i < field.size(); ++i){
+        for (size_t j = 1; j < field[i].size(); ++j){
+            field[i][j] = field[i - 1][j] + field[i][j - 1];
         }
         return (r - l);
     }
+ return field[m - 1][n - 1];   
+}
 
 int main(){
-    // std::string s = s = "ABAB";
-    std::string s = "AABABBA";
-    int  k = 1;
-    std::cout << characterReplacement(s, k) << " ";
+    int m = 5, n = 5;
+     std::cout << uniquePaths(m, n) << "\n";
 
 }
