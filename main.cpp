@@ -14,40 +14,49 @@
 using namespace std;
 
 /*
-1046. Last Stone Weight. Easy
-You are given an array of integers stones where stones[i] is the weight of the ith stone.
+692. Top K Frequent Words. Medium
+Given an array of strings words and an integer k, return the k most frequent strings.
 
-We are playing a game with the stones. On each turn, we choose the heaviest two stones and smash them together. 
-Suppose the heaviest two stones have weights x and y with x <= y. The result of this smash is:
-
-If x == y, both stones are destroyed, and
-If x != y, the stone of weight x is destroyed, and the stone of weight y has new weight y - x.
-At the end of the game, there is at most one stone left.
-
-Return the weight of the last remaining stone. If there are no stones left, return 0.
-1 <= stones.length <= 30
-1 <= stones[i] <= 1000
+Return the answer sorted by the frequency from highest to lowest. Sort the words with the same frequency by their lexicographical order.
+1 <= words.length <= 500
+1 <= words[i].length <= 10
+words[i] consists of lowercase English letters.
+k is in the range [1, The number of unique words[i]]
 */
 
-    int lastStoneWeight(vector<int>& stones) {
-        //base case
-        if (stones.size() == 1)
-            return stones[0];
-        std::priority_queue<int> q{stones.begin(), stones.end()};
-        int temp1 = 0, temp2 = 0;
-        while (q.size() > 1){
-            temp1 = q.top(); q.pop();
-            temp2 = q.top(); q.pop();
-            if (temp1 == temp2)
-                continue;
-            temp1 = (temp1 < temp2)?(temp2 - temp1):(temp1 - temp2);
-            q.push(temp1);
+    vector<string> topKFrequent(vector<string>& words, int k) {
+        std::vector<string> result;
+        std::map<std::string, int> q;//frequency map of all words
+        std::priority_queue<int> max;//priority quee will store frequencies of the words in descending order
+        
+        //fill up the map and frequncies in the descending order
+        for (auto it = words.begin(); it != words.end(); ++it){
+            ++q[*it];
+            max.push(q[*it]);
         }
-        return (q.size() == 1)?q.top():0;
+
+        //picking highest frequencies first find corresponding words in the map (where they are already sorted lexicographically)
+        while (k > 0){
+            int m = max.top();
+            for (auto it = q.begin(); it != q.end(); ++it){
+                if (it->second == m){
+                    result.emplace_back(it->first);
+                    --k;
+                    q.erase(it); //need to erase found word to prevent re-using it if the frequency of the next word is the same
+                    break;
+                }
+            }
+            max.pop();
+        }
+        return result;
     }
 
 int main(){
-     std::vector<int> stones = {2,7,4,1,8,1};
-     std::cout << lastStoneWeight(stones) << "\n";
+    //  std::vector<std::string> words = {"i","love","leetcode","i","love","coding"};
+     std::vector<std::string> words = {"the","day","is","sunny","the","the","the","sunny","is","is"};
+     int k = 4;
+     std::vector<std::string> result = topKFrequent(words, k);
+     for (auto i:result)
+        std::cout << i << "\n";
 
 }
