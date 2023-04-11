@@ -14,35 +14,33 @@
 using namespace std;
 
 /*
-692. Top K Frequent Words. Medium
-Given an array of strings words and an integer k, return the k most frequent strings.
+347. Top K Frequent Elements. Medium
+Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.
 
-Return the answer sorted by the frequency from highest to lowest. Sort the words with the same frequency by their lexicographical order.
-1 <= words.length <= 500
-1 <= words[i].length <= 10
-words[i] consists of lowercase English letters.
-k is in the range [1, The number of unique words[i]]
+1 <= nums.length <= 105
+-104 <= nums[i] <= 104
+k is in the range [1, the number of unique elements in the array].
+It is guaranteed that the answer is unique.
+ 
+
+Follow up: Your algorithm's time complexity must be better than O(n log n), where n is the array's size.
 */
 
-    vector<string> topKFrequent(vector<string>& words, int k) {
-        std::vector<string> result;
-        std::map<std::string, int> q;//frequency map of all words
-        std::priority_queue<int> max;//priority quee will store frequencies of the words in descending order
-        
-        //fill up the map and frequncies in the descending order
-        for (auto it = words.begin(); it != words.end(); ++it){
-            ++q[*it];
-            max.push(q[*it]);
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        std::vector<int> result;
+        std::map<int, int> freq;
+        std::priority_queue<int> max;
+        for (size_t i = 0; i < nums.size(); ++i){
+            ++freq[nums[i]];
+            max.push(freq[nums[i]]);
         }
-
-        //picking highest frequencies first find corresponding words in the map (where they are already sorted lexicographically)
         while (k > 0){
             int m = max.top();
-            for (auto it = q.begin(); it != q.end(); ++it){
+            for (auto it = freq.begin(); it != freq.end(); ++it){
                 if (it->second == m){
                     result.emplace_back(it->first);
                     --k;
-                    q.erase(it); //need to erase found word to prevent re-using it if the frequency of the next word is the same
+                    freq.erase(it);
                     break;
                 }
             }
@@ -52,10 +50,9 @@ k is in the range [1, The number of unique words[i]]
     }
 
 int main(){
-    //  std::vector<std::string> words = {"i","love","leetcode","i","love","coding"};
-     std::vector<std::string> words = {"the","day","is","sunny","the","the","the","sunny","is","is"};
-     int k = 4;
-     std::vector<std::string> result = topKFrequent(words, k);
+    std::vector<int> nums = {1, 4, 8, 3, 9, 1,1,2,2,3};
+    int k = 2;
+    std::vector<int> result = topKFrequent(nums, k);
      for (auto i:result)
         std::cout << i << "\n";
 
