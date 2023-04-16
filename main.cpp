@@ -11,49 +11,63 @@
 #include <stack>
 #include <queue>
 #include <iomanip>
+#include <set>
 using namespace std;
 
 /*
-347. Top K Frequent Elements. Medium
-Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.
-
-1 <= nums.length <= 105
--104 <= nums[i] <= 104
-k is in the range [1, the number of unique elements in the array].
-It is guaranteed that the answer is unique.
- 
-
-Follow up: Your algorithm's time complexity must be better than O(n log n), where n is the array's size.
+54. Spiral Matrix. Medium
+Given an m x n matrix, return all elements of the matrix in spiral order.
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 10
+-100 <= matrix[i][j] <= 100
 */
 
-    vector<int> topKFrequent(vector<int>& nums, int k) {
-        std::vector<int> result;
-        std::map<int, int> freq;
-        std::priority_queue<int> max;
-        for (size_t i = 0; i < nums.size(); ++i){
-            ++freq[nums[i]];
-            max.push(freq[nums[i]]);
-        }
-        while (k > 0){
-            int m = max.top();
-            for (auto it = freq.begin(); it != freq.end(); ++it){
-                if (it->second == m){
-                    result.emplace_back(it->first);
-                    --k;
-                    freq.erase(it);
-                    break;
-                }
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size();
+        int size =  m * n;
+        std::vector<int> res;
+        int rmin = 0, rmax = m - 1;
+        int cmin = 0, cmax = n - 1;
+        while(size > 0){
+            for (size_t col = cmin; col <= cmax; ++col){
+                res.emplace_back(matrix[rmin][col]);
+                --size;
             }
-            max.pop();
+            ++rmin;
+            if (size <= 0)
+                break;
+            for (size_t row = rmin; row <= rmax; ++row){
+                res.emplace_back(matrix[row][cmax]);
+                --size;
+            }
+            --cmax;
+            if (size <= 0)
+                break;
+            for (int col = cmax; col >= cmin; --col){
+                res.emplace_back(matrix[rmax][col]);
+                --size;
+            }
+            --rmax;
+            if (size <= 0)
+                break;
+            for (size_t row = rmax; row >= rmin; --row){
+                res.emplace_back(matrix[row][cmin]);
+                --size;
+            }
+            ++cmin;
         }
-        return result;
+        return res;
     }
 
-int main(){
-    std::vector<int> nums = {1, 4, 8, 3, 9, 1,1,2,2,3};
-    int k = 2;
-    std::vector<int> result = topKFrequent(nums, k);
-     for (auto i:result)
-        std::cout << i << "\n";
 
+int main(){
+std::vector<std::vector<int>> matrix = {
+    {1,2,3,4},
+    {5,6,7,8},
+    {9,10,11,12}
+};
+std::vector<int> res = spiralOrder(matrix);
+for (auto it:res)
+    std::cout << it << " ";
 }
