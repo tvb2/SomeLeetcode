@@ -15,57 +15,49 @@
 using namespace std;
 
 /*
-43. Multiply Strings
-Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2, also represented as a string.
+19. Remove Nth Node From End of List. Medium
+Given the head of a linked list, remove the nth node from the end of the list and return its head.
 
-Note: You must not use any built-in BigInteger library or convert the inputs to integer directly.
-1 <= num1.length, num2.length <= 200
-num1 and num2 consist of digits only.
-Both num1 and num2 do not contain any leading zero, except the number 0 itself.
+The number of nodes in the list is sz.
+1 <= sz <= 30
+0 <= Node.val <= 100
+1 <= n <= sz
 */
-      string multiply(string num1, string num2) {
-        int m = num1.size(), n = num2.size();
-        std::vector<int> n1(m), n2(n);
-        //convert strings to int vectors
-        size_t c = 0;
-        for (int i = m - 1; i >=0; --i){
-            n1[c] = num1[i] - '0';
-            ++c;
+
+ struct ListNode {
+     int val;
+     ListNode *next;
+     ListNode() : val(0), next(nullptr) {}
+     ListNode(int x) : val(x), next(nullptr) {}
+     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ };
+ 
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* c = head;
+        ListNode* nth = head;
+        int count = 0;
+        while (c->next){
+            c = c->next;
+            ++count;
+            if (count > n)
+                nth = nth->next;
         }
-        c = 0;
-        for (int i = n - 1; i >=0; --i){
-            n2[c] = num2[i] - '0';
-            ++c;
-        }
-        if ((n == 1 && n1[0] == 0 ) || (m == 1 && n2[0] == 0))
-            return "0";
-        //multiply
-        std::vector<int> r(m + n);
-        size_t stop = 0;
-        int v1 = 0, v2 = 0, adder = 0;
-        for (size_t it1 = 0; it1 < m; ++it1){
-            for (size_t it2 = 0; it2 < n; ++it2){
-                stop = it1 + it2;
-                v1 = n1[it1] * n2[it2];
-                v2 = v1 + r[stop];
-                adder = v2/10;
-                r[stop] = v2%10;
-                if (adder){
-                    stop = it1 + it2 + 1; 
-                    r[stop] += adder;
-                    adder = 0;
-                }
-            }
-        }
-        std::string res;
-        for (size_t i = 0; i <= stop; ++i){
-            res.insert(res.begin(), r[i] + '0');
-        }
-        return res;
+       if (count < n)
+        head = head->next;
+       else
+        nth->next = nth->next->next;
+        return head;
     }
 
 
 int main(){
-    std::string num1 = "0", num2 = "9133";
-    std::cout << multiply(num1, num2) << "\n";
+ListNode* head = new ListNode(1);
+// = [1,2,3,4,5], n = 2
+// head->next = new ListNode(2);
+// head->next->next = new ListNode(3);
+// head->next->next->next = new ListNode(4);
+// head->next->next->next->next = new ListNode(5);
+int n = 1;
+ListNode *result = removeNthFromEnd(head, n);
+std::cout << "end\n";
 }
