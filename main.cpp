@@ -15,13 +15,12 @@
 using namespace std;
 
 /*
-19. Remove Nth Node From End of List. Medium
-Given the head of a linked list, remove the nth node from the end of the list and return its head.
-
-The number of nodes in the list is sz.
-1 <= sz <= 30
-0 <= Node.val <= 100
-1 <= n <= sz
+234. Palindrome Linked List. Easy
+Given the head of a singly linked list, return true if it is a 
+palindrome
+ or false otherwise.
+ The number of nodes in the list is in the range [1, 105].
+0 <= Node.val <= 9
 */
 
  struct ListNode {
@@ -32,21 +31,18 @@ The number of nodes in the list is sz.
      ListNode(int x, ListNode *next) : val(x), next(next) {}
  };
  
-    ListNode* removeNthFromEnd(ListNode* head, int n) {
-        ListNode* c = head;
-        ListNode* nth = head;
-        int count = 0;
-        while (c->next){
-            c = c->next;
-            ++count;
-            if (count > n)
-                nth = nth->next;
+    bool isPalindrome(ListNode* head) {
+        std::deque<int> l;
+        while(head){
+            l.push_back(head->val);
+            head = head->next;    
         }
-       if (count < n)
-        head = head->next;
-       else
-        nth->next = nth->next->next;
-        return head;
+        while (l.size() > 1){
+            if (l.back() != l.front())
+                return false;
+            l.pop_back(); l.pop_front();
+        }
+    return true;
     }
 
 
@@ -54,10 +50,8 @@ int main(){
 ListNode* head = new ListNode(1);
 // = [1,2,3,4,5], n = 2
 // head->next = new ListNode(2);
-// head->next->next = new ListNode(3);
-// head->next->next->next = new ListNode(4);
+// head->next->next = new ListNode(2);
+// head->next->next->next = new ListNode(1);
 // head->next->next->next->next = new ListNode(5);
-int n = 1;
-ListNode *result = removeNthFromEnd(head, n);
-std::cout << "end\n";
+std::cout << boolalpha << isPalindrome(head) <<  " end\n";
 }
