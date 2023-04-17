@@ -15,68 +15,57 @@
 using namespace std;
 
 /*
-1706. Where Will the Ball Fall. Medium
-You have a 2-D grid of size m x n representing a box, and you have n balls. The box is open on the top and bottom sides.
+43. Multiply Strings
+Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2, also represented as a string.
 
-Each cell in the box has a diagonal board spanning two corners of the cell that can redirect a ball to the right or to the left.
-
-A board that redirects the ball to the right spans the top-left corner to the bottom-right corner and is represented in the grid as 1.
-A board that redirects the ball to the left spans the top-right corner to the bottom-left corner and is represented in the grid as -1.
-We drop one ball at the top of each column of the box. Each ball can get stuck in the box or fall out of the bottom. A ball gets stuck if it hits a "V" shaped pattern between two boards or if a board redirects the ball into either wall of the box.
-
-Return an array answer of size n where answer[i] is the column that the ball falls out of at the bottom after dropping the ball from the ith column at the top, or -1 if the ball gets stuck in the box.
-m == grid.length
-n == grid[i].length
-1 <= m, n <= 100
-grid[i][j] is 1 or -1.
+Note: You must not use any built-in BigInteger library or convert the inputs to integer directly.
+1 <= num1.length, num2.length <= 200
+num1 and num2 consist of digits only.
+Both num1 and num2 do not contain any leading zero, except the number 0 itself.
 */
-
-    vector<int> findBall(vector<vector<int>>& grid) {
-        int m = grid.size(), n = grid[0].size();
-        std::vector<int> res(n);
-        if (grid.size() == 1 && grid[0].size() == 1){
-            res[0] = -1;
-            return res;
+      string multiply(string num1, string num2) {
+        int m = num1.size(), n = num2.size();
+        std::vector<int> n1(m), n2(n);
+        //convert strings to int vectors
+        size_t c = 0;
+        for (int i = m - 1; i >=0; --i){
+            n1[c] = num1[i] - '0';
+            ++c;
         }
-        int row = 0, col = 0;
-        for (int i = 0; i < res.size(); ++i){
-            row = 0, col = i;
-            bool through = true;
-            while (row < m){
-                if ((col == 0 || grid[row][col - 1] == 1) && grid[row][col] == -1){
-                    res[i] = -1;
-                    through = false;
-                    break;
-                }
-                if ((col == (n-1) || grid[row][col + 1] == -1) && grid[row][col] == 1){
-                    res[i] = -1;
-                    through = false;
-                    break;
-                }
-                if (grid[row][col] == 1){
-                    ++row; ++col;
-                    continue;
-                }
-                if (grid[row][col] == -1){
-                    ++row; --col;
-                    continue;
+        c = 0;
+        for (int i = n - 1; i >=0; --i){
+            n2[c] = num2[i] - '0';
+            ++c;
+        }
+        if ((n == 1 && n1[0] == 0 ) || (m == 1 && n2[0] == 0))
+            return "0";
+        //multiply
+        std::vector<int> r(m + n);
+        size_t stop = 0;
+        int v1 = 0, v2 = 0, adder = 0;
+        for (size_t it1 = 0; it1 < m; ++it1){
+            for (size_t it2 = 0; it2 < n; ++it2){
+                stop = it1 + it2;
+                v1 = n1[it1] * n2[it2];
+                v2 = v1 + r[stop];
+                adder = v2/10;
+                r[stop] = v2%10;
+                if (adder){
+                    stop = it1 + it2 + 1; 
+                    r[stop] += adder;
+                    adder = 0;
                 }
             }
-            if (through)
-                res[i] = col;
+        }
+        std::string res;
+        for (size_t i = 0; i <= stop; ++i){
+            res.insert(res.begin(), r[i] + '0');
         }
         return res;
     }
 
 
 int main(){
-// std::vector<std::vector<int>> grid = {
-//     {1}
-// };
-std::vector<std::vector<int>> grid = {
-{-1,1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,1,-1,1,-1,-1,1,1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,1,1,1,-1,-1,-1,-1}
-};
-std::vector<int> res = findBall(grid);
-for (auto it:res)
-    std::cout << it << " ";
+    std::string num1 = "0", num2 = "9133";
+    std::cout << multiply(num1, num2) << "\n";
 }
