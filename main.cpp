@@ -15,17 +15,13 @@
 using namespace std;
 
 /*
-328. Odd Even Linked List. Medium
-Given the head of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
+148. Sort List. Medium
+Given the head of a linked list, return the list after sorting it in ascending order.
 
-The first node is considered odd, and the second node is even, and so on.
+The number of nodes in the list is in the range [0, 5 * 104].
+-105 <= Node.val <= 105
 
-Note that the relative order inside both the even and odd groups should remain as it was in the input.
-
-You must solve the problem in O(1) extra space complexity and O(n) time complexity.
-
-The number of nodes in the linked list is in the range [0, 104].
--106 <= Node.val <= 106
+Follow up: Can you sort the linked list in O(n logn)
 */
 
  struct ListNode {
@@ -36,41 +32,68 @@ The number of nodes in the linked list is in the range [0, 104].
      ListNode(int x, ListNode *next) : val(x), next(next) {}
  };
  
-    ListNode* oddEvenList(ListNode* head) {
-        if (!head)
-            return head;
-        if (!head->next)
-            return head;
-        ListNode* odd = head;
-        ListNode* even = head->next;
-        ListNode* second = even;
-        while (even && odd && even->next && odd->next){
-                odd->next = odd->next->next;
-                odd = odd->next;
-            if (even->next->next){
-                even->next = even->next->next;
-                even = even->next;
+    ListNode* divide(ListNode* head){
+        ListNode* fast = head;
+        ListNode* slow = head;
+        ListNode* last = head;
+        if (!fast->next){
+            return slow;
+        }
+        if (fast->next && !fast->next->next){
+            slow = slow->next;
+            last->next = nullptr;
+            return slow;
+        }
+        while (fast->next && fast->next->next){
+            last = slow;
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        last->next = nullptr;
+        
+        return slow;
+    }
+
+    ListNode * merge(ListNode* left, ListNode* right){
+        ListNode* ptr = new ListNode(0);
+        ListNode* head = ptr;
+        while (left && right){
+            if (left->val < right->val){
+                ptr->next = left;
+                left = left->next;
             }
             else{
-                even->next = nullptr;
-                even = even->next;
+                ptr->next = right;
+                right = right->next;
             }
+            ptr = ptr->next;
         }
-            if (even){
-                even->next = nullptr;
-                even = even->next;
-            }
-        odd->next = second;
-        return head;
+        if (left)
+            ptr->next = left;
+        else
+            ptr->next = right;
+    return head->next;
+    }
+
+    //implementing editorial solution: divide and merge algorithm:
+    //recursively divide list into two ~equal parts until only one element is left
+    //then merge left and right parts comparing elements
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next)
+            return head;
+        ListNode* m = divide(head);
+        ListNode* l = sortList(head);
+        ListNode* r = sortList(m);
+        return merge(l, r);
     }
 
 
 int main(){
-ListNode* head = new ListNode(1);
-head->next = new ListNode(2);
-head->next->next = new ListNode(3);
-head->next->next->next = new ListNode(4);
-head->next->next->next->next = new ListNode(5);
-ListNode* result = oddEvenList(head);
+ListNode* head = new ListNode(5);
+head->next = new ListNode(-1);
+// head->next->next = new ListNode(3);
+// head->next->next->next = new ListNode(4);
+// head->next->next->next->next = new ListNode(0);
+ListNode* result = sortList(head);
 std::cout <<  " end\n";
 }
