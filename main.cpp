@@ -15,85 +15,77 @@
 using namespace std;
 
 /*
-148. Sort List. Medium
-Given the head of a linked list, return the list after sorting it in ascending order.
+2131. Longest Palindrome by Concatenating Two Letter Words. Medium
+You are given an array of strings words. Each element of words consists of two lowercase English letters.
 
-The number of nodes in the list is in the range [0, 5 * 104].
--105 <= Node.val <= 105
+Create the longest possible palindrome by selecting some elements from words and concatenating them in any order. Each element can be selected at most once.
 
-Follow up: Can you sort the linked list in O(n logn)
+Return the length of the longest palindrome that you can create. If it is impossible to create any palindrome, return 0.
+
+A palindrome is a string that reads the same forward and backward.
+
+1 <= words.length <= 105
+words[i].length == 2
+words[i] consists of lowercase English letters.
 */
 
- struct ListNode {
-     int val;
-     ListNode *next;
-     ListNode() : val(0), next(nullptr) {}
-     ListNode(int x) : val(x), next(nullptr) {}
-     ListNode(int x, ListNode *next) : val(x), next(next) {}
- };
+//  struct ListNode {
+//      int val;
+//      ListNode *next;
+//      ListNode() : val(0), next(nullptr) {}
+//      ListNode(int x) : val(x), next(nullptr) {}
+//      ListNode(int x, ListNode *next) : val(x), next(next) {}
+//  };
  
-    ListNode* divide(ListNode* head){
-        ListNode* fast = head;
-        ListNode* slow = head;
-        ListNode* last = head;
-        if (!fast->next){
-            return slow;
-        }
-        if (fast->next && !fast->next->next){
-            slow = slow->next;
-            last->next = nullptr;
-            return slow;
-        }
-        while (fast->next && fast->next->next){
-            last = slow;
-            slow = slow->next;
-            fast = fast->next->next;
-        }
-        last->next = nullptr;
-        
-        return slow;
-    }
 
-    ListNode * merge(ListNode* left, ListNode* right){
-        ListNode* ptr = new ListNode(0);
-        ListNode* head = ptr;
-        while (left && right){
-            if (left->val < right->val){
-                ptr->next = left;
-                left = left->next;
+    /*
+    Using two maps: one (m) to store each string and number of occurrencies, the second (dbl) to store strings like "gg"
+    then we parse map m and increment count deleting records from the map
+    int the end work with map of doubles (dbl) - add those records that divide by 4 like in the case: ("aa lc cl aa").
+    also add one item in the middle for cases like "ab gg ba"
+    */
+    int longestPalindrome(vector<string>& words) {
+        int size = words.size();
+        int count = 0;
+        std::map<std::string,int> m;
+        std::map<std::string,int> dbl;
+
+        std::string rev = "";
+        for (size_t it = 0; it < size; ++it){
+            if (words[it][0] == words[it][1])
+                dbl[words[it]] += 2;
+            else
+                ++m[words[it]];
+        }
+        for (auto it = m.begin(); it != m.end();){
+            rev = it->first;
+            std::swap(rev[0], rev[1]);    
+            if (m.find(rev) != m.end()){
+                count += 4*std::min(it->second, m[rev]);
+                it = m.erase(it); 
+                m.erase(rev);
             }
             else{
-                ptr->next = right;
-                right = right->next;
+                it = m.erase(it);
             }
-            ptr = ptr->next;
+            if (m.empty())
+                break;
+            it = m.begin();
         }
-        if (left)
-            ptr->next = left;
-        else
-            ptr->next = right;
-    return head->next;
-    }
-
-    //implementing editorial solution: divide and merge algorithm:
-    //recursively divide list into two ~equal parts until only one element is left
-    //then merge left and right parts comparing elements
-    ListNode* sortList(ListNode* head) {
-        if (!head || !head->next)
-            return head;
-        ListNode* m = divide(head);
-        ListNode* l = sortList(head);
-        ListNode* r = sortList(m);
-        return merge(l, r);
+        bool middle = false;
+        for (auto it = dbl.begin(); it != dbl.end(); ++it){
+            if (!middle && it->second%4 != 0){
+                count += 2;
+                it->second -= 2;
+                middle = true;
+            }
+                count += 4*(it->second/4);
+            }
+        return count;
     }
 
 
 int main(){
-ListNode* head = new ListNode(5);
-head->next = new ListNode(-1);
-// head->next->next = new ListNode(3);
-// head->next->next->next = new ListNode(4);
-// head->next->next->next->next = new ListNode(0);
-ListNode* result = sortList(head);
-std::cout <<  " end\n";
+std::vector<std::string> words = {"ll","lb","bb","bx","xx","lx","xx","lx","ll","xb","bx","lb","bb","lb","bl","bb","bx","xl","lb","xx"};
+std::cout << longestPalindrome(words) <<  "\n";
 }
