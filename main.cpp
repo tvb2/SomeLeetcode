@@ -15,18 +15,15 @@
 using namespace std;
 
 /*
-2131. Longest Palindrome by Concatenating Two Letter Words. Medium
-You are given an array of strings words. Each element of words consists of two lowercase English letters.
+621. Task Scheduler. Medium
+Given a characters array tasks, representing the tasks a CPU needs to do, where each letter represents a different task. Tasks could be done in any order. Each task is done in one unit of time. For each unit of time, the CPU could complete either one task or just be idle.
 
-Create the longest possible palindrome by selecting some elements from words and concatenating them in any order. Each element can be selected at most once.
+However, there is a non-negative integer n that represents the cooldown period between two same tasks (the same letter in the array), that is that there must be at least n units of time between any two same tasks.
 
-Return the length of the longest palindrome that you can create. If it is impossible to create any palindrome, return 0.
-
-A palindrome is a string that reads the same forward and backward.
-
-1 <= words.length <= 105
-words[i].length == 2
-words[i] consists of lowercase English letters.
+Return the least number of units of times that the CPU will take to finish all the given tasks.
+1 <= task.length <= 104
+tasks[i] is upper-case English letter.
+The integer n is in the range [0, 100].
 */
 
 //  struct ListNode {
@@ -38,54 +35,27 @@ words[i] consists of lowercase English letters.
 //  };
  
 
-    /*
-    Using two maps: one (m) to store each string and number of occurrencies, the second (dbl) to store strings like "gg"
-    then we parse map m and increment count deleting records from the map
-    int the end work with map of doubles (dbl) - add those records that divide by 4 like in the case: ("aa lc cl aa").
-    also add one item in the middle for cases like "ab gg ba"
-    */
-    int longestPalindrome(vector<string>& words) {
-        int size = words.size();
-        int count = 0;
-        std::map<std::string,int> m;
-        std::map<std::string,int> dbl;
-
-        std::string rev = "";
-        for (size_t it = 0; it < size; ++it){
-            if (words[it][0] == words[it][1])
-                dbl[words[it]] += 2;
-            else
-                ++m[words[it]];
+    //solution by beetlecamera with my explanation
+    int leastInterval(vector<char>& tasks, int n) {
+        //frequency map of characters
+        std::map<char, int> m;
+        int max = 0;//max frequency element
+        for (auto it = tasks.begin(); it != tasks.end(); ++it){
+            ++m[*it];
+            max = std::max(max, m[*it]);//record max freq element
         }
-        for (auto it = m.begin(); it != m.end();){
-            rev = it->first;
-            std::swap(rev[0], rev[1]);    
-            if (m.find(rev) != m.end()){
-                count += 4*std::min(it->second, m[rev]);
-                it = m.erase(it); 
-                m.erase(rev);
-            }
-            else{
-                it = m.erase(it);
-            }
-            if (m.empty())
-                break;
-            it = m.begin();
-        }
-        bool middle = false;
-        for (auto it = dbl.begin(); it != dbl.end(); ++it){
-            if (!middle && it->second%4 != 0){
-                count += 2;
-                it->second -= 2;
-                middle = true;
-            }
-                count += 4*(it->second/4);
-            }
-        return count;
+        int res = (max - 1)*(n + 1);//possible number of operations is a rectangle of this size
+        for (auto i:m)
+            if (i.second == max) 
+                ++res;//add each element that is equal to maximum frequency
+        return std::max(res,static_cast<int>(tasks.size()));//choose maximum of possible result and length of tasks array
     }
 
-
 int main(){
-std::vector<std::string> words = {"ll","lb","bb","bx","xx","lx","xx","lx","ll","xb","bx","lb","bb","lb","bl","bb","bx","xl","lb","xx"};
-std::cout << longestPalindrome(words) <<  "\n";
+// std::vector<char> tasks = {'A','A','A','B','B','B'}; 
+// std::vector<char> tasks = {'A','B','C','D','E','A','B','C','D','E'};
+// std::vector<char> tasks = {'A','A','A','A','A','A','B','C','D','E','F','G'};
+std::vector<char> tasks = {'A','A','A','B','B','B', 'C','C','C', 'D', 'D', 'E'};
+int n = 2;
+std::cout << leastInterval(tasks, n) <<  "\n";
 }
