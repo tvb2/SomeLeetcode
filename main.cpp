@@ -15,11 +15,14 @@
 using namespace std;
 
 /*
-110. Balanced Binary Tree. Easy
-Given a binary tree, determine if it is 
-height-balanced
-The number of nodes in the tree is in the range [0, 5000].
--104 <= Node.val <= 104
+543. Diameter of Binary Tree. Easy
+Given the root of a binary tree, return the length of the diameter of the tree.
+
+The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
+
+The length of a path between two nodes is represented by the number of edges between them.
+The number of nodes in the tree is in the range [1, 104].
+-100 <= Node.val <= 100
 */
 
 //Definition of a ListNode
@@ -43,13 +46,13 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-        //return maximum number of levels for the node
+    //return maximum number of levels for the node
     int maxLevels(TreeNode* root, int levels){
         ++levels;
         int l = 0, r = 0;
         if (root->left || root->right){
-            l = (root->left)?maxLevels(root->left, levels):0;
-            r = (root->right)?maxLevels(root->right, levels):0;
+            l = (root->left)?maxLevels(root->left, levels):1;
+            r = (root->right)?maxLevels(root->right, levels):1;
         }
         else
             return levels;
@@ -57,34 +60,42 @@ struct TreeNode {
         return levels;
     }
 
-    //using maxLevels function compare maximum number of levels for left and right branches
-    bool isBalanced(TreeNode* root) {
+     int diameterOfBinaryTree(TreeNode* root) {
+        int diameter = 0, diaL = 0, diaR = 0;
         if (!root)
-            return true;
+            return 0;
+        if (!root->left && !root->right)
+            return 1;
         int l = 0, r = 0;
-        bool balanced = true;
         if (root->left || root->right){
             l = (root->left)?maxLevels(root->left, l):0;
-            r = (root->right)?maxLevels(root->right,r):0;       
-            balanced = balanced?(std::abs(l - r) <= 1):balanced;
-            balanced = (root->left && balanced)?isBalanced(root->left):balanced;
-            balanced = (root->right && balanced)?isBalanced(root->right):balanced;
+            r = (root->right)?maxLevels(root->right,r):0;
+            diameter = (diameter < (l + r))?(l + r):diameter;
+            diaL = (root->left)?diameterOfBinaryTree(root->left):diameter;
+            diaR = (root->right)?diameterOfBinaryTree(root->right):diameter;
+            diameter = std::max({diameter, diaL, diaR});
+            // balanced = (root->left && balanced)?isBalanced(root->left):balanced;
+            // balanced = (root->right && balanced)?isBalanced(root->right):balanced;
         }
-        return balanced;       
+        return diameter;
     }
 
 
 int main(){
     // root = [3,9,20,null,null,15,7]
-    TreeNode* root = new TreeNode(1);
-    root->left = new TreeNode(2);
-    root->left->left = new TreeNode(3);
-    root->left->left->left = new TreeNode(4);
+    TreeNode* root = new TreeNode(4);
+        root->left = new TreeNode(2);
+            root->left->left = new TreeNode(1);
+            root->left->right = new TreeNode(3);
+                root->left->right->left = new TreeNode(2);
+                    root->left->right->left->left = new TreeNode(1);
+                    root->left->right->left->right = new TreeNode(8);
+                root->left->right->right= new TreeNode(4);
+            
+        // root->right = new TreeNode(7);
+        //     root->right->left = new TreeNode(6);
+        //     root->right->right = new TreeNode(9);
     
-    root->right = new TreeNode(2);
-    root->right->right= new TreeNode(3);
-    root->right->right->right= new TreeNode(4);
-
-    std::cout << boolalpha << isBalanced(root);
+    std::cout << diameterOfBinaryTree(root);
     std::cout << " complete\n";
 }
