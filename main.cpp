@@ -15,10 +15,11 @@
 using namespace std;
 
 /*
-226. Invert Binary Tree. Easy
-Given the root of a binary tree, invert the tree, and return its root.
-The number of nodes in the tree is in the range [0, 100].
--100 <= Node.val <= 100
+110. Balanced Binary Tree. Easy
+Given a binary tree, determine if it is 
+height-balanced
+The number of nodes in the tree is in the range [0, 5000].
+-104 <= Node.val <= 104
 */
 
 //Definition of a ListNode
@@ -42,32 +43,48 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-
-    //recursively drill down the tree and get left and right nodes. Then swap them
-     TreeNode* invertTree(TreeNode* root) {
-        if (!root)
-            return root;
+        //return maximum number of levels for the node
+    int maxLevels(TreeNode* root, int levels){
+        ++levels;
+        int l = 0, r = 0;
         if (root->left || root->right){
-            TreeNode* left = (root->left)?invertTree(root->left):nullptr;
-            TreeNode* right = (root->right)?invertTree(root->right):nullptr;
-            root->right = left;
-            root->left = right;
+            l = (root->left)?maxLevels(root->left, levels):0;
+            r = (root->right)?maxLevels(root->right, levels):0;
         }
-        return root;
+        else
+            return levels;
+        levels = std::max(l,r);
+        return levels;
+    }
+
+    //using maxLevels function compare maximum number of levels for left and right branches
+    bool isBalanced(TreeNode* root) {
+        if (!root)
+            return true;
+        int l = 0, r = 0;
+        bool balanced = true;
+        if (root->left || root->right){
+            l = (root->left)?maxLevels(root->left, l):0;
+            r = (root->right)?maxLevels(root->right,r):0;       
+            balanced = balanced?(std::abs(l - r) <= 1):balanced;
+            balanced = (root->left && balanced)?isBalanced(root->left):balanced;
+            balanced = (root->right && balanced)?isBalanced(root->right):balanced;
+        }
+        return balanced;       
     }
 
 
 int main(){
-    // root = [4,2,7,1,3,6,9]
+    // root = [3,9,20,null,null,15,7]
     TreeNode* root = new TreeNode(1);
     root->left = new TreeNode(2);
-    root->left->left = new TreeNode(1);
-    root->left->right = new TreeNode(3);
+    root->left->left = new TreeNode(3);
+    root->left->left->left = new TreeNode(4);
+    
+    root->right = new TreeNode(2);
+    root->right->right= new TreeNode(3);
+    root->right->right->right= new TreeNode(4);
 
-    root->right = new TreeNode(7);
-    root->right->left = new TreeNode(6);
-    root->right->right= new TreeNode(9);
-
-    TreeNode* res = invertTree(root);
-    std::cout << "complete\n";
+    std::cout << boolalpha << isBalanced(root);
+    std::cout << " complete\n";
 }
