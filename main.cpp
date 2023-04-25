@@ -16,14 +16,15 @@
 using namespace std;
 
 /*
-543. Diameter of Binary Tree. Easy
-Given the root of a binary tree, return the length of the diameter of the tree.
+112. Path Sum. Easy
+Given the root of a binary tree and an integer targetSum, return true if the tree has a root-to-leaf path such that 
+adding up all the values along the path equals targetSum.
 
-The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
+A leaf is a node with no children.
 
-The length of a path between two nodes is represented by the number of edges between them.
-The number of nodes in the tree is in the range [1, 104].
--100 <= Node.val <= 100
+The number of nodes in the tree is in the range [0, 5000].
+-1000 <= Node.val <= 1000
+-1000 <= targetSum <= 1000
 */
 
 //Definition of a ListNode
@@ -46,7 +47,6 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
-
     //Level order tree creation
     void createLevels(TreeNode* &root, std::vector<std::vector<TreeNode*>> &nVect, int level){
         if (level == 0){//first (root) node
@@ -103,7 +103,6 @@ struct TreeNode {
         return nVect;
     }
 
-
     /**
      * convert string representing a list of nodes to a binary tree represented by a root.
     */
@@ -118,23 +117,27 @@ struct TreeNode {
         return root;
 }
 
+    //recursively search left and right branches subtracting node values from targetSum and return result when we come to any end leaf
+    bool hasPathSum(TreeNode* root, int targetSum) {
+        if (!root)
+            return false;
+        bool has = false;
+        if (root && !has){
+            targetSum -= root->val;
+            if (!root->left && !root->right)
+                return targetSum == 0;            
+        }
+        if (root->left) has = has || hasPathSum(root->left, targetSum);
+        if (root->right) has = has || hasPathSum(root->right, targetSum);
+        return has;
+    }
+
 int main(){
-    std::string nodes = "10,5,-3,3,2,null,11,3,-2,null,1";
-    // std::string nodes = "5,4,8,11,null,13,4,7,2,null,null,5,1";
+    // std::string nodes = "1,2,3"; int targetSum = 5;
+    // std::string nodes = "5,4,8,11,null,13,4,7,2,null,null,5,1"; int targetSum = 22;
+    std::string nodes = ""; int targetSum = 22;
     TreeNode* root = buildTree(nodes);
-    // std::vector<int> nodes = {5,4,8,11,nullptr,13,4,7,2,nullptr,nullptr,nullptr,1};
-    // TreeNode* root = new TreeNode(4);
-    //     root->left = new TreeNode(2);
-    //         root->left->left = new TreeNode(1);
-    //         root->left->right = new TreeNode(3);
-    //             root->left->right->left = new TreeNode(2);
-    //                 root->left->right->left->left = new TreeNode(1);
-    //                 root->left->right->left->right = new TreeNode(8);
-    //             root->left->right->right= new TreeNode(4);
-            
-        // root->right = new TreeNode(7);
-        //     root->right->left = new TreeNode(6);
-        //     root->right->right = new TreeNode(9);
     
+    std::cout<< boolalpha << hasPathSum(root, targetSum) << " complete\n";
     std::cout << " complete\n";
 }
