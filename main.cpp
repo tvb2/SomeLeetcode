@@ -16,11 +16,11 @@
 using namespace std;
 
 /*
-112. Path Sum. Easy
-Given the root of a binary tree and an integer targetSum, return true if the tree has a root-to-leaf path such that 
-adding up all the values along the path equals targetSum.
+113. Path Sum II. Medium
+Given the root of a binary tree and an integer targetSum, return all root-to-leaf paths where the sum of the node values in the path equals targetSum. 
+Each path should be returned as a list of the node values, not node references.
 
-A leaf is a node with no children.
+A root-to-leaf path is a path starting from the root and ending at any leaf node. A leaf is a node with no children.
 
 The number of nodes in the tree is in the range [0, 5000].
 -1000 <= Node.val <= 1000
@@ -117,27 +117,66 @@ struct TreeNode {
         return root;
 }
 
+
     //recursively search left and right branches subtracting node values from targetSum and return result when we come to any end leaf
-    bool hasPathSum(TreeNode* root, int targetSum) {
-        if (!root)
-            return false;
+       void singlePathSum(TreeNode* root, int targetSum, std::vector<std::vector<int>> &res, std::vector<int> &t) {
         bool has = false;
-        if (root && !has){
-            targetSum -= root->val;
-            if (!root->left && !root->right)
-                return targetSum == 0;            
+        targetSum -= root->val;
+        t.emplace_back(root->val);
+        if (!root->left && !root->right){
+            if (targetSum == 0){
+                res.emplace_back(t);
+                t.pop_back();
+                has = true;
+            }
+            else{
+                t.pop_back();
+            }
         }
-        if (root->left) has = has || hasPathSum(root->left, targetSum);
-        if (root->right) has = has || hasPathSum(root->right, targetSum);
-        return has;
+        if (root->left || root->right){
+            if (root->left) singlePathSum(root->left, targetSum, res, t);
+            if (root->right) singlePathSum(root->right, targetSum, res, t);
+            t.pop_back();
+        }
+        return;
+    }
+
+    //recursively search left and right branches subtracting node values from targetSum and return result when we come to any end leaf
+    vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
+        vector<vector<int>> res;
+        vector<int> t;
+        int i = 0;
+        if (!root)
+            return res;
+        t.emplace_back(root->val);
+        targetSum -= root->val;
+        if (targetSum == 0 && !root->left && !root->right){
+            res.emplace_back(t);
+            return res;
+        }
+
+        if (root->left) singlePathSum(root->left, targetSum, res, t);
+        t.resize(1);
+        if (root->right) singlePathSum(root->right, targetSum, res, t);
+        return res;
     }
 
 int main(){
     // std::string nodes = "1,2,3"; int targetSum = 5;
+    // std::string nodes = "1,2,3,4,6,5,2,null,2,null,null,null,null,3"; int targetSum = 9;
+    std::string nodes = "1,0,1,1,2,0,-1,0,1,-1,0,-1,0,1,0"; int targetSum = 2;
     // std::string nodes = "5,4,8,11,null,13,4,7,2,null,null,5,1"; int targetSum = 22;
-    std::string nodes = ""; int targetSum = 22;
+    // std::string nodes = "1,2,null,3,null,4,null,5"; int targetSum = 6;
+    
+    // std::string nodes = ""; int targetSum = 22;
     TreeNode* root = buildTree(nodes);
     
-    std::cout<< boolalpha << hasPathSum(root, targetSum) << " complete\n";
+    vector<vector<int>> res = pathSum(root, targetSum);
+    for (auto i:res){
+        for (auto j:i){
+            std::cout << j << " ";
+        }
+        std::cout <<"\n";
+    }
     std::cout << " complete\n";
 }
