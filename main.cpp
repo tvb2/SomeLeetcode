@@ -3,18 +3,14 @@
 using namespace std;
 
 /*
-74. Search a 2D Matrix. Medium
-You are given an m x n integer matrix matrix with the following two properties:
+108. Convert Sorted Array to Binary Search Tree. Easy
+Given an integer array nums where the elements are sorted in ascending order, convert it to a 
+height-balanced binary search tree.
+ Constraints:
 
-Each row is sorted in non-decreasing order.
-The first integer of each row is greater than the last integer of the previous row.
-Given an integer target, return true if target is in matrix or false otherwise.
-
-You must write a solution in O(log(m * n)) time complexity.
-m == matrix.length
-n == matrix[i].length
-1 <= m, n <= 100
--104 <= matrix[i][j], target <= 104
+1 <= nums.length <= 104
+-104 <= nums[i] <= 104
+nums is sorted in a strictly increasing order.
 */
 
 //Definition of a ListNode
@@ -27,7 +23,7 @@ n == matrix[i].length
      ListNode(int x, ListNode *next) : val(x), next(next) {}
  };
  */
-/*
+
 //Definition for a binary tree node.
 struct TreeNode {
     int val;
@@ -37,6 +33,8 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
+
+/*
     //Level order tree creation
     void createLevels(TreeNode* &root, std::vector<std::vector<TreeNode*>> &nVect, int level){
         if (level == 0){//first (root) node
@@ -110,59 +108,31 @@ struct TreeNode {
 }
 */
     
-    //binary search
-    bool search(std::vector<int>& nums, int target) {
-        int l = 0, r = nums.size() - 1, ind = l;
-        ind = l + (r - l)/2;
-        while ( l >=0 && r < nums.size() && l <= r){
-            ind = l + (r - l)/2;
-            if (nums[ind] == target){
-                return true;
-            }
-            if (nums[ind] > target){
-                r = ind -1;
-            }
-            else {
-                l = ind +1;
-            }
-        }
-        return false;
+    TreeNode* sortedArrayToBSTHelper(vector<int>& nums, int begin, int end) {
+      if (begin > end) {
+        return nullptr;
+      }
+
+      int mid = (begin + end) / 2;
+      TreeNode* root = new TreeNode(nums[mid]);
+
+      root->left = sortedArrayToBSTHelper(nums, begin, mid - 1);
+      root->right = sortedArrayToBSTHelper(nums, mid + 1, end);
+        
+      return root;
     }
 
-    bool searchMatrix(std::vector<std::vector<int>> &m, int target) {
-        //for single line m search the first row
-        if (m.size() == 1){
-            return search(m[0], target);
-        }
-        int size = m.size();
-        int min = 0, max = size - 1, ind = min;
-        while (min >= 0 && max < size && min <= max){
-            ind = min + (max - min)/2;
-            if (m[ind][0] == target){
-                return true;
-            }
-            if (m[ind][0] > target){
-                max = ind - 1;
-            }
-            else{
-                if (m[ind][m[ind].size() - 1] < target)
-                    min = ind + 1;
-                else{
-                    return search (m[ind], target);
-                }
-            }
-        }
-        if (ind < m.size() && ind >=0)
-            return search(m[ind], target);
-        return false;
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+      return sortedArrayToBSTHelper(nums, 0, nums.size() - 1);
     }
-
 
 int main(){
-    std::vector<std::vector<int>> m = {{23}};
-        int target = 23;
+    std::vector<int> nums = {-10,-3,0,5,9};
     // TreeNode* root = buildTree(nodes);
-    // std::cout << m.size();
-    std::cout << boolalpha << searchMatrix(m, target);
+    
+    TreeNode* root = sortedArrayToBST(nums);
+
+    
+    
     std::cout << " complete\n";
 }
