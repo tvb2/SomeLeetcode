@@ -1,16 +1,19 @@
 #include <iostream>
+
 #include <vector>
+#include <set>
+
+#include <sstream>
+#include <string>
+
 using namespace std;
 
 /*
-108. Convert Sorted Array to Binary Search Tree. Easy
-Given an integer array nums where the elements are sorted in ascending order, convert it to a 
-height-balanced binary search tree.
- Constraints:
-
-1 <= nums.length <= 104
--104 <= nums[i] <= 104
-nums is sorted in a strictly increasing order.
+230. Kth Smallest Element in a BST. Medium
+Given the root of a binary search tree, and an integer k, return the kth smallest value (1-indexed) of all the values of the nodes in the tree.
+The number of nodes in the tree is n.
+1 <= k <= n <= 104
+0 <= Node.val <= 104
 */
 
 //Definition of a ListNode
@@ -34,7 +37,7 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-/*
+
     //Level order tree creation
     void createLevels(TreeNode* &root, std::vector<std::vector<TreeNode*>> &nVect, int level){
         if (level == 0){//first (root) node
@@ -61,7 +64,7 @@ struct TreeNode {
      * convert string to a vector of Nodes for level-order creation
      * Each element of vector represents a level in the tree
     */
-/*
+
     std::vector<std::vector<TreeNode*>> getNodesVector(std::string nodes){
         std::vector<std::vector<TreeNode*>> nVect;
         std::string temp;
@@ -91,11 +94,11 @@ struct TreeNode {
         }
         return nVect;
     }
-*/
+
     /**
      * convert string representing a list of nodes to a binary tree represented by a root.
     */
-/*
+
     TreeNode* buildTree(std::string nodes){
         if (nodes.length() == 0)
             return new TreeNode;
@@ -106,32 +109,28 @@ struct TreeNode {
         createLevels(root, nVect, level);
         return root;
 }
-*/
-    
-    TreeNode* sortedArrayToBSTHelper(vector<int>& nums, int begin, int end) {
-      if (begin > end) {
-        return nullptr;
-      }
 
-      int mid = (begin + end) / 2;
-      TreeNode* root = new TreeNode(nums[mid]);
-
-      root->left = sortedArrayToBSTHelper(nums, begin, mid - 1);
-      root->right = sortedArrayToBSTHelper(nums, mid + 1, end);
-        
-      return root;
+    void helper (TreeNode *root, std::set<int> &result){
+        if (root != nullptr){
+            helper(root->left, result);
+            result.emplace(root->val);
+            helper(root->right, result);
+        }
     }
 
-    TreeNode* sortedArrayToBST(vector<int>& nums) {
-      return sortedArrayToBSTHelper(nums, 0, nums.size() - 1);
+    int kthSmallest(TreeNode* root, int k) {
+        std::set<int> result;
+        helper(root, result);
+        auto it = std::next(result.begin(), (k-1));
+        return  *it;
     }
 
 int main(){
-    std::vector<int> nums = {-10,-3,0,5,9};
-    // TreeNode* root = buildTree(nodes);
+    std::string nodes = "5,3,6,2,4,null,null,1";
+    int k = 3;
+    TreeNode* root = buildTree(nodes);
     
-    TreeNode* root = sortedArrayToBST(nums);
-
+    std::cout << kthSmallest(root, k) << "\n";
     
     
     std::cout << " complete\n";
