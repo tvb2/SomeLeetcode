@@ -5,15 +5,25 @@
 
 #include <sstream>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
 /*
-230. Kth Smallest Element in a BST. Medium
-Given the root of a binary search tree, and an integer k, return the kth smallest value (1-indexed) of all the values of the nodes in the tree.
-The number of nodes in the tree is n.
-1 <= k <= n <= 104
-0 <= Node.val <= 104
+173. Binary Search Tree Iterator. Medium
+Implement the BSTIterator class that represents an iterator over the in-order traversal of a binary search tree (BST):
+
+BSTIterator(TreeNode root) Initializes an object of the BSTIterator class. The root of the BST is given as part of the constructor. 
+The pointer should be initialized to a non-existent number smaller than any element in the BST.
+boolean hasNext() Returns true if there exists a number in the traversal to the right of the pointer, otherwise returns false.
+int next() Moves the pointer to the right, then returns the number at the pointer.
+Notice that by initializing the pointer to a non-existent smallest number, the first call to next() will return the smallest element in the BST.
+
+You may assume that next() calls will always be valid. That is, there will be at least a next number in the in-order traversal when next() is called.
+
+The number of nodes in the tree is in the range [1, 105].
+0 <= Node.val <= 106
+At most 105 calls will be made to hasNext, and next.
 */
 
 //Definition of a ListNode
@@ -68,6 +78,10 @@ struct TreeNode {
     std::vector<std::vector<TreeNode*>> getNodesVector(std::string nodes){
         std::vector<std::vector<TreeNode*>> nVect;
         std::string temp;
+        for (auto it = nodes.begin(); it != nodes.end(); ++it){
+            if (*it == ' ')
+                it = nodes.erase(it);
+        }
         std::stringstream stream(nodes);
         int level = 0, count = 1;
         std::vector<TreeNode*> lvl;
@@ -110,28 +124,69 @@ struct TreeNode {
         return root;
 }
 
-    void helper (TreeNode *root, std::set<int> &result){
+class BSTIterator {
+    std::vector<TreeNode*> nodes;
+    TreeNode *obj;
+    std::vector<TreeNode*>::iterator it;
+public:
+
+    BSTIterator(TreeNode* root) {
+        this->obj = root;
+        inorderHelper(root);
+        this->it = this->nodes.begin();
+    }
+    
+    void inorderHelper (TreeNode *root){
         if (root != nullptr){
-            helper(root->left, result);
-            result.emplace(root->val);
-            helper(root->right, result);
+            inorderHelper(root->left);
+            this->nodes.emplace_back(root);
+            inorderHelper(root->right);
         }
+            if (nodes.empty()) this->nodes.emplace_back(root);
     }
 
-    int kthSmallest(TreeNode* root, int k) {
-        std::set<int> result;
-        helper(root, result);
-        auto it = std::next(result.begin(), (k-1));
-        return  *it;
+    int next() {
+        this->it = std::next(it);
+        return (*it)->val;
     }
+    
+    bool hasNext() {
+        return !(std::next(it) == this->nodes.end());
+    }
+};
+
+
+
 
 int main(){
-    std::string nodes = "5,3,6,2,4,null,null,1";
+    std::string nodes = "7, 3, 15, null, null, 9, 20";
+
+    /**
+Input
+["BSTIterator", "next", "next", "hasNext", "next", "hasNext", "next", "hasNext", "next", "hasNext"]
+[[[7, 3, 15, null, null, 9, 20]], [], [], [], [], [], [], [], [], []]
+Output
+[null, 3, 7, true, 9, true, 15, true, 20, false]
+
+Explanation
+BSTIterator bSTIterator = new BSTIterator([7, 3, 15, null, null, 9, 20]);
+bSTIterator.next();    // return 3
+bSTIterator.next();    // return 7
+bSTIterator.hasNext(); // return True
+bSTIterator.next();    // return 9
+bSTIterator.hasNext(); // return True
+bSTIterator.next();    // return 15
+bSTIterator.hasNext(); // return True
+bSTIterator.next();    // return 20
+bSTIterator.hasNext(); // return False
+    */
     int k = 3;
     TreeNode* root = buildTree(nodes);
     
-    std::cout << kthSmallest(root, k) << "\n";
-    
-    
+    //Your BSTIterator object will be instantiated and called as such:
+    BSTIterator* obj = new BSTIterator(root);
+    int param_1 = obj->next();
+    bool param_2 = obj->hasNext();
+
     std::cout << " complete\n";
 }
