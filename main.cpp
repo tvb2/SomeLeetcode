@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <set>
+#include <queue>
 
 #include <sstream>
 #include <string>
@@ -10,20 +11,21 @@
 using namespace std;
 
 /*
-173. Binary Search Tree Iterator. Medium
-Implement the BSTIterator class that represents an iterator over the in-order traversal of a binary search tree (BST):
+994. Rotting Oranges. Medium
+You are given an m x n grid where each cell can have one of three values:
 
-BSTIterator(TreeNode root) Initializes an object of the BSTIterator class. The root of the BST is given as part of the constructor. 
-The pointer should be initialized to a non-existent number smaller than any element in the BST.
-boolean hasNext() Returns true if there exists a number in the traversal to the right of the pointer, otherwise returns false.
-int next() Moves the pointer to the right, then returns the number at the pointer.
-Notice that by initializing the pointer to a non-existent smallest number, the first call to next() will return the smallest element in the BST.
+0 representing an empty cell,
+1 representing a fresh orange, or
+2 representing a rotten orange.
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
 
-You may assume that next() calls will always be valid. That is, there will be at least a next number in the in-order traversal when next() is called.
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+Constraints:
 
-The number of nodes in the tree is in the range [1, 105].
-0 <= Node.val <= 106
-At most 105 calls will be made to hasNext, and next.
+m == grid.length
+n == grid[i].length
+1 <= m, n <= 10
+grid[i][j] is 0, 1, or 2.
 */
 
 //Definition of a ListNode
@@ -37,6 +39,7 @@ At most 105 calls will be made to hasNext, and next.
  };
  */
 
+/*
 //Definition for a binary tree node.
 struct TreeNode {
     int val;
@@ -46,8 +49,9 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
+*/
 
-
+/*
     //Level order tree creation
     void createLevels(TreeNode* &root, std::vector<std::vector<TreeNode*>> &nVect, int level){
         if (level == 0){//first (root) node
@@ -69,12 +73,12 @@ struct TreeNode {
         }
         return;
     }
-
+*/
     /**
      * convert string to a vector of Nodes for level-order creation
      * Each element of vector represents a level in the tree
     */
-
+/*
     std::vector<std::vector<TreeNode*>> getNodesVector(std::string nodes){
         std::vector<std::vector<TreeNode*>> nVect;
         std::string temp;
@@ -108,11 +112,11 @@ struct TreeNode {
         }
         return nVect;
     }
-
+*/
     /**
      * convert string representing a list of nodes to a binary tree represented by a root.
     */
-
+/*
     TreeNode* buildTree(std::string nodes){
         if (nodes.length() == 0)
             return new TreeNode;
@@ -123,70 +127,83 @@ struct TreeNode {
         createLevels(root, nVect, level);
         return root;
 }
-
-class BSTIterator {
-    std::vector<TreeNode*> nodes;
-    TreeNode *obj;
-    std::vector<TreeNode*>::iterator it;
-public:
-
-    BSTIterator(TreeNode* root) {
-        this->obj = root;
-        inorderHelper(root);
-        this->it = this->nodes.begin();
-    }
-    
-    void inorderHelper (TreeNode *root){
-        if (root != nullptr){
-            inorderHelper(root->left);
-            this->nodes.emplace_back(root);
-            inorderHelper(root->right);
+*/
+//using quee to add rotten oranges iterate the grid layer by layer
+      int orangesRotting(vector<vector<int>>& grid) {
+        int fresh = 0, time = 0;
+        std::queue<std::pair<int, int>> r;
+        
+        //first parse the matrix to record coordinates of rotten oranges and total number of fresh oranges
+        for (int row = 0; row < grid.size(); ++row){
+            for (int col = 0; col < grid[0].size(); ++col){
+                if (grid[row][col] == 2){//rotten orange
+                    r.push(std::pair<int,int>(row,col));//coordinates of initially rotten orange
+                }
+                else if (grid[row][col] == 1){
+                    ++fresh;//count of fresh oranges
+                }
+            }
         }
-            if (nodes.empty()) this->nodes.emplace_back(root);
+        //number of rotten oranges
+        int size = r.size();
+        while (!r.empty() && fresh > 0){
+            ++time;//we iterate time only once per layer
+            //start layer - infect all oranges that surround rotten ones
+            for (int n = 1; n <= size; ++n){
+                int row = r.front().first, col = r.front().second;
+                //list of all possible neighbours
+                std::vector<std::vector<int>> neighbours = {{row + 1, col}, {row, col + 1}, {row - 1, col}, {row, col - 1}};
+                for (size_t it = 0; it < neighbours.size(); ++it){
+                    int x = neighbours[it][0], y = neighbours[it][1];
+                    if (x >= 0 && x < grid.size() && y >= 0 && y < grid[0].size()){
+                        if (grid[x][y] == 0 || grid[x][y] == 2)
+                            continue;
+                        if (grid[x][y] == 1){
+                            grid[x][y] = 2;
+                            --fresh;
+                            if (fresh > 0) r.push(std::pair<int,int>(x,y));
+                        }
+                    }
+                }
+                r.pop();//remove the orange from list since we have iterated all its neighbours
+            }
+            size = r.size(); //update number of oranges that yet have to be iterated
+        }
+        return (fresh == 0)?time:-1;
     }
-
-    int next() {
-        this->it = std::next(it);
-        return (*it)->val;
-    }
-    
-    bool hasNext() {
-        return !(std::next(it) == this->nodes.end());
-    }
-};
-
-
-
 
 int main(){
-    std::string nodes = "7, 3, 15, null, null, 9, 20";
+    std::vector<std::vector<int>> grid = {//58
+        {2,0,1,1,1,1,1,1,1,1},
+        {1,0,1,0,0,0,0,0,0,1},
+        {1,0,1,0,1,1,1,1,0,1},
+        {1,0,1,0,1,0,0,1,0,1},
+        {1,0,1,0,1,0,0,1,0,1},
+        {1,0,1,0,1,1,0,1,0,1},
+        {1,0,1,0,0,0,0,1,0,1},
+        {1,0,1,1,1,1,1,1,0,1},
+        {1,0,0,0,0,0,0,0,0,1},
+        {1,1,1,1,1,1,1,1,1,1}    
+        };
+    // std::vector<std::vector<int>> grid = {//-1
+    //     {1,2,0,1},
+    //     {1,1,0,0},
+    //     {1,1,1,1},
+    //     {1,2,1,1}
+    // };
+    // std::vector<std::vector<int>> grid = {//3
+    //     {1,2,1,1},
+    //     {1,1,1,1},
+    //     {1,1,1,1},
+    //     {1,2,1,1}
+    // };
+    // std::vector<std::vector<int>> grid = {//4
+    //     {2,1,1},
+    //     {1,1,0},
+    //     {0,1,1}
+    // };
 
-    /**
-Input
-["BSTIterator", "next", "next", "hasNext", "next", "hasNext", "next", "hasNext", "next", "hasNext"]
-[[[7, 3, 15, null, null, 9, 20]], [], [], [], [], [], [], [], [], []]
-Output
-[null, 3, 7, true, 9, true, 15, true, 20, false]
-
-Explanation
-BSTIterator bSTIterator = new BSTIterator([7, 3, 15, null, null, 9, 20]);
-bSTIterator.next();    // return 3
-bSTIterator.next();    // return 7
-bSTIterator.hasNext(); // return True
-bSTIterator.next();    // return 9
-bSTIterator.hasNext(); // return True
-bSTIterator.next();    // return 15
-bSTIterator.hasNext(); // return True
-bSTIterator.next();    // return 20
-bSTIterator.hasNext(); // return False
-    */
-    int k = 3;
-    TreeNode* root = buildTree(nodes);
-    
-    //Your BSTIterator object will be instantiated and called as such:
-    BSTIterator* obj = new BSTIterator(root);
-    int param_1 = obj->next();
-    bool param_2 = obj->hasNext();
-
+    // TreeNode* root = buildTree(nodes);
+    std::cout << orangesRotting(grid) << "\n";
     std::cout << " complete\n";
 }
