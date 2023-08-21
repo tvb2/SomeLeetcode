@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/bogda/OneDrive/Documents/vsc/leetcode/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe   -g -o CMakeFiles\\leetcode.dir\\main.cpp.obj -c C:\\Users\\bogda\\OneDrive\\Documents\\vsc\\leetcode\\main.cpp",
+  "file": "C:/Users/bogda/OneDrive/Documents/vsc/leetcode/main.cpp",
+  "output": "CMakeFiles/leetcode.dir/main.cpp.obj"
+}
+]
