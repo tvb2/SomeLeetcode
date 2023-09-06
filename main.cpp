@@ -12,55 +12,53 @@
 using namespace std;
 
 /**
- * @brief Given a string s, check if it can be constructed by taking a substring of it and appending multiple copies
- *  of the substring together.
- * 
- * @param s 
- * @return true 
- * @return false 
+ * Definition for singly-linked list.
  */
-    bool repeatedSubstringPattern(string s) {
-        size_t len = s.length();
-        //basic case
-        if (len < 2)
-            return false;
-        bool good = true;
-        for (size_t m = 2; m < len; ++m){
-            good = true;
-            //if string length is divisible by m..
-            size_t r = len % m;
-            if (r == 0){
-                //how many segments we should compare
-                size_t n = len / m;
-                for (size_t k = 0; k < n - 1; ++k){
-                    if (!good)
-                        break;
-                    for (size_t i = 0; i < m; ++i){
-                        size_t pos = i + k*m;
-                        if (s[pos] != s[(pos + m)]){
-                            good = false;
-                            break;
-                        }
-                    }
-                }
-                if (good)
-                    return true;
-                good = true;
-            } 
+    struct ListNode {
+      int val;
+      ListNode *next;
+      ListNode() : val(0), next(nullptr) {}
+      ListNode(int x) : val(x), next(nullptr) {}
+      ListNode(int x, ListNode *next) : val(x), next(next) {}
+  };
+    void printList(ListNode *l){
+        while(!(l == nullptr)){
+        std::cout << l->val << " ";
+        l = l->next;
+    }
+ }
+    ListNode * createList(std::vector<int> &v){
+    ListNode *head = new ListNode();
+    if (v.size() == 0){
+        head = nullptr;
+        return head; 
+    }
+    
+    ListNode *c = head;
+    for (size_t i = 0; i < v.size(); ++i){
+        c->val = v[i];
+        if (i+1 < v.size()){
+            c->next = new ListNode;
+            c = c->next;
         }
-        for (size_t i = 0; i < len - 1; ++i){
-            if (s[i] != s[i + 1]){
-                good = false;
-                break;
-            }
-        }
-        return good;
+    }
+    return head;
+}
+
+    vector<ListNode*> splitListToParts(ListNode* head, int k) {
+        std::vector<ListNode*> result{};
+        return result;
     }
 
+
 int main(){
-    std::string s = "abab";
-    std::cout << "the string is : " << boolalpha << repeatedSubstringPattern(s) << "\n";
+    std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
+
+    ListNode *head = createList(v);
+
+    ListNode *l = head;
+    printList(l);
 
 
-    std::cout << " complete\n";
+    std::cout << " \ncomplete\n";
 }
