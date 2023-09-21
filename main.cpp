@@ -11,106 +11,68 @@
 
 using namespace std;
 
-//725. Split Linked List in Parts
+//1337. The K Weakest Rows in a Matrix
+/*
+You are given an m x n binary matrix mat of 1's (representing soldiers) and 0's (representing civilians). The soldiers are positioned in front of the civilians. That is, all the 1's will appear to the left of all the 0's in each row.
 
-/**
- * Definition for singly-linked list.
- */
-    struct ListNode {
-      int val;
-      ListNode *next;
-      ListNode() : val(0), next(nullptr) {}
-      ListNode(int x) : val(x), next(nullptr) {}
-      ListNode(int x, ListNode *next) : val(x), next(next) {}
-  };
-    void printList(ListNode *l){
-        while(!(l == nullptr)){
-        std::cout << l->val << " ";
-        l = l->next;
-        }
- }
-    ListNode * createList(std::vector<int> &v){
-    ListNode *head = new ListNode();
-    if (v.size() == 0){
-        head = nullptr;
-        return head; 
-    }
-    
-    ListNode *c = head;
-    for (size_t i = 0; i < v.size(); ++i){
-        c->val = v[i];
-        if (i+1 < v.size()){
-            c->next = new ListNode;
-            c = c->next;
-        }
-    }
-    return head;
-}
+A row i is weaker than a row j if one of the following is true:
 
-    vector<ListNode*> splitListToParts(ListNode* head, int k) {
-        std::vector<ListNode*> result;
-        std::vector<int> cont;
-        //first read all elements into a vector
-        while(!(head == nullptr)){
-            cont.emplace_back(head->val);
-            head = head->next;
-        }
-        int f = cont.size()/k;
-        int s = cont.size()%k;
-        int count = 0;
-        //the case when there will be empty lists
-        if (f == 0){
-            for (int i = 0; i < s; ++i){
-                ListNode *n = new ListNode(cont[i]);
-                result.emplace_back(n);
-            }
-            for (int i = result.size(); i < k; ++i){
-                ListNode *n = nullptr;
-                result.emplace_back(n);
-            }
-            // al singles plus whatever is the remainder
-        }
+The number of soldiers in row i is less than the number of soldiers in row j.
+Both rows have the same number of soldiers and i < j.
+Return the indices of the k weakest rows in the matrix ordered from weakest to strongest.   
+Constraints:
 
-        //create normal lists
-        else{
-            for (int i = 0; i < k; ++i){
-                int l = (s > 0)?(f+1):f; //the size of current list
-                --s;
-                int start = count;
-                ListNode *n = new ListNode(cont[start]);
-                ++count;
-                ListNode *c = n;
-                for (int j = 1; j < l; ++j){
-                    ListNode *m = new ListNode(cont[start+j]);
-                    c->next = m;
-                    c = m;
-                    ++count;
+m == mat.length
+n == mat[i].length
+2 <= n, m <= 100
+1 <= k <= m
+matrix[i][j] is either 0 or 1.
+*/
+    vector<int> kWeakestRows(vector<vector<int>>& mat, int k) {
+        int m = mat.size();
+        int n = mat[0].size();
+        int zeroes = 0;
+        std::map<int, std::vector<int>> count;
+        std::vector<int> result;
+        for (size_t i = 0; i < m; ++i){
+            int local = 0;
+            for (int j = n - 1; j >= 0; --j){
+                if (mat[i][j] == 0){
+                    ++local;
                 }
-                result.emplace_back(n);
+                else{
+                    break;
+                }
             }
+            count[n-local].emplace_back(i);
+        }            
+        auto it = count.begin();
+        while (k != 0 && it != count.end()){
+            for (size_t i = 0; i < it->second.size(); ++i){
+                if (k <= 0)
+                    break;
+                result.emplace_back(it->second[i]);
+                --k;
+            }
+            ++it;
         }
         return result;
     }
 
 
 int main(){
-    std::vector<int> v = {1,2,3,4,5,6,7,8,9,10,11};
-    int k = 16;
+    std::vector<std::vector<int>> v = {
+        {1,1,0,0,0},
+        {1,1,1,1,0},
+        {1,0,0,0,0},
+        {1,1,0,0,0},
+        {1,1,1,1,1}
+        };
+    int k = 3;
 
-    ListNode *head = createList(v);
-
-    ListNode *l = head;
-    printList(l);
-
-    std::vector<ListNode*> result = splitListToParts(head, k);
-    std::cout << "the size of the result vector is: " << result.size() << "\n";
-
+    std::vector<int> result = kWeakestRows(v, k);
     for (size_t i = 0; i < result.size(); ++i){
-        ListNode *m = result[i];
-        printList(m);
-        std::cout << "\n";
+        std::cout << result[i] << " ";
     }
-
-
     std::cout << " \ncomplete\n";
 }
