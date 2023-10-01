@@ -10,45 +10,31 @@
 #include <iomanip>
 
 using namespace std;
+// 557. Reverse Words in a String III. Easy
 /*
-392. Is Subsequence. Easy
-Given two strings s and t, return true if s is a subsequence of t, or false otherwise.
-A subsequence of a string is a new string that is formed from the original string by 
-deleting some (can be none) of the characters without disturbing the relative positions 
-of the remaining characters. (i.e., "ace" is a subsequence of "abcde" while "aec" is not).
-
+Given a string s, reverse the order of characters in each word within a sentence while still preserving whitespace and initial 
+word order.
 Constraints:
 
-0 <= s.length <= 100
-0 <= t.length <= 104
-s and t consist only of lowercase English letters.
-
+1 <= s.length <= 5 * 104
+s contains printable ASCII characters.
+s does not contain any leading or trailing spaces.
+There is at least one word in s.
+All the words in s are separated by a single space.
 */
-    bool isSubsequence(string s, string t) {
-        size_t sl = s.length();
-        size_t tl = t.length();
-        if (sl == 0){
-            return true;
-        }
-        if ( sl > tl){
-            return false;
-        }
-        size_t cs = 0;
-        for (size_t ct = 0; ct < tl; ++ct){
-            if (cs == sl)
-                return true;
-            if (s[cs] == t[ct])
-                ++cs;
-        }
-        return cs == sl;
+
+string reverseWords(string s) {
+  int len = s.length();
+  std::string::iterator l = s.begin();
+  for (int i = 1; i < len; ++i){
+    if (s[i] != ' '){
+      l = s.insert(l,s[i]);
+      s.erase(l+i);
     }
-
-
-int main(){
-std::string s = "";
-std::string t = "";
-
-std::cout << boolalpha << isSubsequence(s,t) << "\n";
-
-    std::cout << " \ncomplete\n";
+  }
+    return s.substr(0,len);
+}
+int main() {
+  std::string s = "Let's take LeetCode contest";
+  std::cout << reverseWords(s) << "\n";
 }
