@@ -3,50 +3,46 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
-// 316. Remove Duplicate Letters. Medium
+// 1846. Maximum Element After Decreasing and Rearranging
 /*
-Given a string s, remove duplicate letters so that every letter appears once and
-only once. You must make sure your result is the smallest in lexicographical
-order among all possible results.
-*/
-string removeDuplicateLetters(string s) {
-  int len = s.length();
-  std::map<char, int> alpha;
-  std::map<char, bool> used;
-  std::vector<int> list;
+You are given an array of positive integers arr. Perform some operations (possibly none) on arr so that it satisfies 
+these conditions:
 
-  // create alphabet usage map
-  for (int i = 0; i < len; ++i) {
-      if (alpha.find(s[i]) == alpha.end()) {
-        alpha[s[i]] = 1;
+The value of the first element in arr must be 1.
+The absolute difference between any 2 adjacent elements must be less than or equal to 1. In other words, 
+abs(arr[i] - arr[i - 1]) <= 1 for each i where 1 <= i < arr.length (0-indexed). abs(x) is the absolute value of x.
+There are 2 types of operations that you can perform any number of times:
+
+Decrease the value of any element of arr to a smaller positive integer.
+Rearrange the elements of arr to be in any order.
+Return the maximum possible value of an element in arr after performing the operations to satisfy the conditions.
+
+Constraints:
+
+1 <= arr.length <= 105
+1 <= arr[i] <= 109
+*/
+
+ int maximumElementAfterDecrementingAndRearranging(vector<int>& arr) {
+    std::sort(arr.begin(), arr.end());
+    arr[0] = 1;
+    for (auto i = 1; i < arr.size(); ++i){
+      if (arr[i] - arr[i - 1] > 1){
+        arr[i] = arr[i - 1] + 1;
       }
-      else
-        ++alpha[s[i]];
-      used[s[i]] = false;
+    }
+    return arr[arr.size() - 1];        
     }
 
-for (int i = 0; i < len; ++i) {
-  --alpha[s[i]];
-  if (used[s[i]] == true)
-    continue;
-
-  while(list.size() > 0 && s[i] < s[list.back()] && alpha[s[list.back()]] > 0){
-    used[s[list.back()]] = false;
-    list.erase(list.end());
-  }
-  list.push_back(i);
-  used[s[i]] = true;
-}
-std::string result;
-for (auto i:list){
-  result.push_back(s[i]);    
-}
-
-    
-    return result;
-  }
   int main() {
-    std::string s = "cdadabcc" ;// "bccaabb"; // "leetcode"; //"cdadabcc"
-    std::cout << removeDuplicateLetters(s) << "\n";
+    std::vector<int> arr ={2,2,1,2,1};// {1,2,3,4,5};// {100,1,1000, 50};
+    std::cout << maximumElementAfterDecrementingAndRearranging(arr) << "\n";
+    
+    for (auto i = 0; i < arr.size(); ++i){
+      std::cout << arr[i] << " ";
+    }
+
+    std::cout << "completed\n";
   }
