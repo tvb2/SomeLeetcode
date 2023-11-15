@@ -5,44 +5,74 @@
 #include <vector>
 #include <algorithm>
 using namespace std;
-// 1846. Maximum Element After Decreasing and Rearranging
+// 1930. Unique Length-3 Palindromic Subsequences
 /*
-You are given an array of positive integers arr. Perform some operations (possibly none) on arr so that it satisfies 
-these conditions:
+Given a string s, return the number of unique palindromes of length three that are a subsequence of s.
 
-The value of the first element in arr must be 1.
-The absolute difference between any 2 adjacent elements must be less than or equal to 1. In other words, 
-abs(arr[i] - arr[i - 1]) <= 1 for each i where 1 <= i < arr.length (0-indexed). abs(x) is the absolute value of x.
-There are 2 types of operations that you can perform any number of times:
+Note that even if there are multiple ways to obtain the same subsequence, it is still only counted once.
 
-Decrease the value of any element of arr to a smaller positive integer.
-Rearrange the elements of arr to be in any order.
-Return the maximum possible value of an element in arr after performing the operations to satisfy the conditions.
+A palindrome is a string that reads the same forwards and backwards.
+
+A subsequence of a string is a new string generated from the original string with some characters (can be none) 
+deleted without changing the relative order of the remaining characters.
+
+For example, "ace" is a subsequence of "abcde".
 
 Constraints:
 
-1 <= arr.length <= 105
-1 <= arr[i] <= 109
+3 <= s.length <= 105
+s consists of only lowercase English letters.
 */
 
- int maximumElementAfterDecrementingAndRearranging(vector<int>& arr) {
-    std::sort(arr.begin(), arr.end());
-    arr[0] = 1;
-    for (auto i = 1; i < arr.size(); ++i){
-      if (arr[i] - arr[i - 1] > 1){
-        arr[i] = arr[i - 1] + 1;
-      }
+  int countPalindromicSubsequence(string s) {
+    std::vector<int> alpha(26,0);
+    std::vector<bool> used(26,false);
+    std::vector<char> list;
+
+    //create a map of characters and dictionaries for each one
+    std::map<char, std::vector<int>> m;
+    for (char c = 'a'; c <= 'z'; ++c){
+      m[c] = alpha;
     }
-    return arr[arr.size() - 1];        
+    
+    //create dictionary with number of occurrencies of each character
+    for (auto i = 0; i < s.length(); ++i){
+      ++alpha[s[i] - 'a'];
     }
 
-  int main() {
-    std::vector<int> arr ={2,2,1,2,1};// {1,2,3,4,5};// {100,1,1000, 50};
-    std::cout << maximumElementAfterDecrementingAndRearranging(arr) << "\n";
-    
-    for (auto i = 0; i < arr.size(); ++i){
-      std::cout << arr[i] << " ";
+    int count = 0;
+
+    //main logic
+    for (auto i = 0; i < s.length(); ++i){
+      int pos = s[i] - 'a';
+      --alpha[pos];
+
+      //check for all candidates that current character makes a palindro
+      for(auto j = 0; j < list.size(); ++j){
+        if (m[list[j]][pos] == 0 && !(alpha[pos] == 0 && s[i] == list[j])){
+          m[list[j]][pos] = 1;
+          ++count;
+        }
+      }
+      //check if character is already candidate for checking. If not and it qualifies - make it candidate
+      if (alpha[pos] != 0 && !used[pos]){
+        used[pos] = true;
+        list.push_back(s[i]);
+      }
+      if (alpha[pos] == 0 && used[pos]){
+        int k = 0;
+        while(list[k] != s[i])
+          ++k;
+        list.erase(list.begin() + k);
+      }
+
     }
+    return count;
+  }
+
+  int main() {
+    std::string s = "adc";//"aabca";// "bbcbaba";
+    std::cout << countPalindromicSubsequence(s) << "\n";
 
     std::cout << "completed\n";
   }
