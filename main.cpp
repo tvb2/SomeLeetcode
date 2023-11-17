@@ -9,92 +9,38 @@
 #include <wchar.h>
 #include <cstring>
 using namespace std;
-// 1980. Find Unique Binary String
+// 1877. Minimize Maximum Pair Sum in Array
 /*
-Given an array of strings nums containing n unique binary strings each of length n, return a binary string of length n 
-that does not appear in nums. If there are multiple answers, you may return any of them.
+The pair sum of a pair (a,b) is equal to a + b. The maximum pair sum is the largest pair sum in a list of pairs.
+
+For example, if we have pairs (1,5), (2,3), and (4,4), the maximum pair sum would be max(1+5, 2+3, 4+4) = max(6, 5, 8) = 8.
+Given an array nums of even length n, pair up the elements of nums into n / 2 pairs such that:
+
+Each element of nums is in exactly one pair, and
+The maximum pair sum is minimized.
+Return the minimized maximum pair sum after optimally pairing up the elements.
 
 Constraints:
 
 n == nums.length
-1 <= n <= 16
-nums[i].length == n
-nums[i] is either '0' or '1'.
-All the strings of nums are unique.
+2 <= n <= 105
+n is even.
+1 <= nums[i] <= 105
 */
 
-// function to convert string representing binary value to decimal
-int convert(std::string s) {
-  //have to do this down below because had issues converting long strings (big numbers) to long long
-  char * cstr = new char [s.length()+1];
-  std::strcpy (cstr, s.c_str());
-  char * pEnd;
-  long long n = strtol(cstr,&pEnd,10); 
-	int dec = 0, i = 0, rem;
-
-	while (n != 0) {
-		rem = n % 10;
-		n /= 10;
-		dec += rem * pow(2, i);
-		++i;
-	}
-	return dec;
-}
-
-// function to convert decimal to binary 
-std::string decToBinary(int n) 
-{ 
-  std::string result;
-    // array to store binary number 
-    int binaryNum[32]; 
-  
-    // counter for binary array 
-    int i = 0; 
-    while (n > 0) { 
-
-        // storing remainder in binary array 
-        int c = n % 2;
-        result = std::to_string(c) + result; 
-        n = n / 2; 
-        i++; 
+    int minPairSum(vector<int>& nums) {
+      sort(nums.begin(), nums.end());
+      int l = 0, r = nums.size() - 1, sum = 0;
+      while (l < r){
+        sum = (nums[l] + nums[r] > sum)?(nums[l] + nums[r]):sum;
+        ++l; --r;
+      }
+      return sum;        
     }
-    if (result == "")
-      result = "0";
-    return result;
-} 
-
-string findDifferentBinaryString(vector<string>& nums) {
-  //expected maximum number of combinations is 2^n
-  //the task is to construct all possible combinations and return the first one which is missing in nums
-  //for n = 16 there are 65 536 combinations possible
-  //another approach takes into account that each combination can be represented as a decimal number up to 2^n
-  //converting each string into a decimal number and knowing maximum possible for current n we can easily identify missing
-  //elements
-  std::string result;
-  std::set<int> dec;
-  std::vector<int> decimals;
-  for (auto i = 0; i < nums.size(); ++i){
-    dec.emplace(convert(nums[i]));
-    decimals.push_back(convert(nums[i]));
-  }
-  long long max = pow(2,nums.size());
-  int val = 0;
-  for (int i = 0; i < max; ++i){
-    if (dec.find(i) == dec.end()){
-      val = i;
-      break;
-    }
-  }
-  result = decToBinary(val);
-  while (result.length() < nums.size()){
-    result.insert(result.begin(),'0');
-  }
-  return result;    
-}
 
   int main() {
-    std::vector<std::string> nums ={"11010011101","10110010101","01011001111","01100011001","00110110110","10110011011","11110000010","01110000000","00110011100","11111011100","11111110110"};// {"011", "001", "000"};
-    std::cout << findDifferentBinaryString(nums) << "\n";
+    std::vector<int> nums ={3,5,2,3};// {3,5,4,2,4,6};
+    std::cout << minPairSum(nums) << "\n";
 
     std::cout << "completed\n";
   }
